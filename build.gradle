@@ -1,0 +1,80 @@
+plugins {
+  // This is used for running "./gradlew dependencyUpdates" to find
+  // available library updates (for use when updating version numbers
+  // in this file).
+  id "com.github.ben-manes.versions" version "0.20.0"
+
+  id "net.ltgt.errorprone" version "0.6"
+
+  id 'maven-publish'
+}
+
+apply plugin: 'java-library'
+apply plugin: 'net.ltgt.errorprone'
+
+repositories {
+    jcenter()
+}
+
+def errorprone_core_lib = "com.google.errorprone:error_prone_core:2.3.1"
+
+
+dependencies {
+    implementation 'com.google.guava:guava:26.0-jre'
+
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:2.+'
+    testImplementation "com.google.truth:truth:0.30"
+
+    errorprone errorprone_core_lib
+    // To allow optional Errorprone annotations like @Immutable:
+    compileOnly errorprone_core_lib
+}
+
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            afterEvaluate {
+                groupId = 'com.pervasivecode'
+                artifactId = 'java-time-utils'
+                version = '0.9'
+
+                pom {
+                    name = 'Java Time Utilities'
+                    description = 'Classes to simplify writing easily-testable code that uses real-world time (delays, stopwatches, etc.)'
+                    url = 'https://github.com/JamieFlournoy/java-time-utils'
+
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = 'jamieflournoy'
+                            name = 'Jamie Flournoy'
+                            email = 'jamie@pervasivecode.com'
+                            url = 'https://github.com/JamieFlournoy'
+                        }
+                    }
+
+                    issueManagement {
+                        url = 'https://github.com/JamieFlournoy/java-time-utils/issues'
+                        system = 'GitHub Issues'
+                    }
+
+                    scm {
+		        url = 'https://github.com/JamieFlournoy/java-time-utils'
+                        connection = 'scm:git:git://github.com/JamieFlournoy/java-time-utils.git'
+		        developerConnection = 'scm:git:git@github.com:JamieFlournoy/java-time-utils.git'
+                    }
+                }
+
+            }
+        }
+    }
+}
