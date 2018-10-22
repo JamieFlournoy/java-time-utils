@@ -2,7 +2,3 @@
 /.gradle/
 /bin/
 /build/
-# Ignore Eclipse IDE project config files.
-/.classpath
-/.project
-/.settings/

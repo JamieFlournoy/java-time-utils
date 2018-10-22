@@ -32,6 +32,11 @@ If you are using Gradle 4.x, put this in your build.properties file:
 ```
 
 
+## Contributing
+
+See [DEVELOPERS.md](DEVELOPERS.md) and [GRADLE_INTRO.md](GRADLE_INTRO.md) if you want to build and hack on the code yourself. 
+
+
 ## Copyright and License
 
 Copyright © 2018 Jamie Flournoy.
