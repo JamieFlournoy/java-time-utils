@@ -25,7 +25,7 @@ dependencies {
     // Dependencies needed at runtime and compile-time:
     implementation 'com.google.guava:guava:26.0-jre'
 
-    // Dependencies needed only for running tests:
+    // Dependencies needed for running tests:
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-core:2.+'
     testImplementation "com.google.truth:truth:0.30"
@@ -34,14 +34,37 @@ dependencies {
     errorprone errorprone_core_lib
 }
 
+// Generate Javadoc documentation files from Java source code.
+javadoc {
+    source = sourceSets.main.allJava
+    // This classpath value makes the source's dependencies visible to
+    // the Javadoc tool.
+    classpath = sourceSets.main.runtimeClasspath
+
+    options.addBooleanOption('html5', true)
+    options {
+        // Only document public members.
+        setMemberLevel JavadocMemberLevel.PUBLIC
+        setAuthor false
+
+        // Generate Javadocs links even when offline, using the
+        // element-list or package-list file copied from the public
+        // Javadocs to a local subdir. (The package-list file contains
+        // a list of Java package names of classes which are
+        // documented in the Javadocs rooted at the specified URL.)
+        linksOffline "https://docs.oracle.com/javase/10/docs/api/", 'gradle/javadocs/jdk/10'
+        linksOffline "https://google.github.io/guava/releases/26.0-jre/api/docs/", 'gradle/javadocs/guava/26.0-jre'
+    }
+}
+
 // Make a source code JAR archive.
-task sourcesJar(type: Jar) {
+task sourcesJar(type: Jar, dependsOn: 'classes') {
     classifier = 'sources'
     from sourceSets.main.allJava
 }
 
 // Make a Javadoc JAR archive.
-task javadocJar(type: Jar) {
+task javadocJar(type: Jar, dependsOn: 'javadoc') {
     classifier = 'javadoc'
     from javadoc.destinationDir
 }

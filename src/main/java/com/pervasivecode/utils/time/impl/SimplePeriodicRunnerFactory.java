@@ -8,19 +8,18 @@ import java.util.concurrent.TimeUnit;
 import com.google.common.annotations.VisibleForTesting;
 
 /**
- * Instances of this class will run a single Runnable task repeatedly at a rate specified in terms
- * of an interval.
+ * Instances of this class will run a single {@link Runnable} task repeatedly at a rate specified in
+ * terms of an interval.
  * <p>
  * Limitations:
- * <p>
  * <ul>
- * <li>Each instance of SimplePeriodicRunnerFactory wraps a single execution thread, so long-running
- * tasks whose duration exceeds the scheduling interval can cause subsequent executions to be late
- * in starting.
- * <li>Starting multiple concurrent tasks via the same SimplePeriodicRunnerFactory (by calling
- * {@link #getRunnerForInterval} multiple times, producing multiple instances of
- * SimplePeriodicRunner that share the same thread) can cause similar interactions, where a single
- * task can block all other eligible tasks from running on time.
+ * <li>Each instance of {@link SimplePeriodicRunnerFactory} wraps a single execution thread, so
+ * long-running tasks whose duration exceeds the scheduling interval can cause subsequent executions
+ * to be late in starting.
+ * <li>Starting multiple concurrent tasks via the same {@link SimplePeriodicRunnerFactory} (by
+ * calling {@link #getRunnerForInterval} multiple times, producing multiple instances of
+ * {@link SimplePeriodicRunner} that share the same thread) can cause similar interactions, where a
+ * single task can block all other eligible tasks from running on time.
  * </ul>
  */
 
@@ -48,10 +47,10 @@ public class SimplePeriodicRunnerFactory {
   private final ScheduledExecutorService executor;
 
   /**
-   * Create an instance that will produce SimplePeriodicRunner instances that all share the same
-   * scheduling thread. (To avoid delays caused by long-running tasks, isolate them by using more
-   * than one instance of this factory class, so separate scheduling threads are used to run the
-   * tasks.)
+   * Create an instance that will produce {@link SimplePeriodicRunner} instances that all share the
+   * same scheduling thread. (To avoid delays caused by long-running tasks, isolate them by using
+   * more than one instance of this factory class, so separate scheduling threads are used to run
+   * the tasks.)
    */
   public SimplePeriodicRunnerFactory() {
     this.executor = createExecutorService();
@@ -63,19 +62,20 @@ public class SimplePeriodicRunnerFactory {
   }
 
   /**
-   * Get an instance of a PeriodicRunner that will allow a Runnable to be executed at the rate
-   * specified via the executionInterval.
+   * Get an instance of a {@link SimplePeriodicRunner} that will allow a {@link Runnable} to be
+   * executed at the rate specified via the executionInterval.
    * 
    * @param executionInterval The desired amount of time to delay execution of the provided Runnable
    *        task after the previous start of execution of that task.
+   * @return The instance that will run a task at the specified interval.
    */
   public SimplePeriodicRunner getRunnerForInterval(Duration executionInterval) {
     return new SimplePeriodicRunner(executor, executionInterval);
   }
 
   /**
-   * Wait up to a specified amount of time for a currently-running Runnable task to finish, if any,
-   * and then shut down. No more scheduled tasks will be run.
+   * Wait up to a specified amount of time for a currently-running {@link Runnable} task to finish,
+   * if any, and then shut down. No more scheduled tasks will be run.
    * 
    * @param timeout How long to wait for currently-running tasks to finish.
    * @param unit The units of the timeout parameter.

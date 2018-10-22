@@ -8,7 +8,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import com.pervasivecode.utils.time.api.PeriodicRunner;
 
-/** A restartable periodic runner of a single Runnable task. */
+/** A periodic runner of a single {@link Runnable} task. */
 public class SimplePeriodicRunner implements PeriodicRunner {
   private final Duration progressUpdateInterval;
   private final ScheduledExecutorService executor;
@@ -32,6 +32,7 @@ public class SimplePeriodicRunner implements PeriodicRunner {
   @Override
   public void start() {
     checkState(task != null, "No periodic task has been set.");
+    checkState(scheduled == null, "The task has already been started.");
     long periodInMillis = this.progressUpdateInterval.toMillis();
     scheduled =
         executor.scheduleAtFixedRate(task, periodInMillis, periodInMillis, TimeUnit.MILLISECONDS);

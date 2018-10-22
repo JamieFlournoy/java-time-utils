@@ -2,6 +2,9 @@ package com.pervasivecode.utils.time.testing;
 
 import com.pervasivecode.utils.time.api.CurrentNanosSource;
 
+/**
+ * This is a fake implementation of {@link CurrentNanosSource}, intended for use by test code.
+ */
 public class FakeNanoSource implements CurrentNanosSource {
   private long fakeNanos = 12345L;
 
@@ -16,6 +19,9 @@ public class FakeNanoSource implements CurrentNanosSource {
     fakeNanos += additionalNanos;
   }
 
+  /**
+   * Return the stored fake "current" time value, and increment the stored value by 1.
+   */
   @Override
   public long currentTimeNanoPrecision() {
     long current = fakeNanos;

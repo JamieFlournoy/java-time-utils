@@ -81,6 +81,20 @@ public class SimplePeriodicRunnerTest {
     // there's no need to separately verify interactions with the mock here.
   }
 
+  /** Ensure that a single task isn't scheduled to be called multiple times per interval. */
+  @Test
+  public void start_withTaskAlreadyStarted_shouldThrow() {
+    expectTaskToBeScheduled(); 
+    runner.setPeriodicTask(DUMMY_RUNNABLE);
+    runner.start();
+    try {
+      runner.start();
+      Truth.assert_().fail("Expected IllegalStateException.");
+    } catch (IllegalStateException e) {
+      assertThat(e.getMessage()).isEqualTo("The task has already been started.");
+    }
+  }
+
   @Test
   public void stop_withNoTask_shouldThrow() {
     try {

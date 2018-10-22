@@ -56,6 +56,18 @@ public class FakePeriodicRunnerTest {
   }
 
   @Test
+  public void start_withTaskAlreadyStarted_shouldThrow() {
+    runner.setPeriodicTask(DUMMY_RUNNABLE);
+    runner.start();
+    try {
+      runner.start();
+      Truth.assert_().fail("Expected IllegalStateException.");
+    } catch (IllegalStateException e) {
+      assertThat(e.getMessage()).isEqualTo("The task has already been started.");
+    }
+  }
+
+  @Test
   public void runOnce_withNoTask_shouldThrow() {
     try {
       runner.runOnce();
