@@ -1,12 +1,15 @@
 plugins {
-  // This is used for running "./gradlew dependencyUpdates" to find
-  // available library updates (for use when updating version numbers
-  // in this file).
-  id "com.github.ben-manes.versions" version "0.20.0"
+    // This is used for running "./gradlew dependencyUpdates" to find
+    // available library updates (for use when updating version numbers
+    // in this file).
+    id "com.github.ben-manes.versions" version "0.20.0"
 
-  id "net.ltgt.errorprone" version "0.6"
+    // This adds ErrorProne, which warns about source code that looks
+    // like it's likely to be a bug, or to lead to future bugs.
+    id "net.ltgt.errorprone" version "0.6"
 
-  id 'maven-publish'
+    id 'maven-publish'
+    id 'signing'
 }
 
 apply plugin: 'java-library'
@@ -18,24 +21,41 @@ repositories {
 
 def errorprone_core_lib = "com.google.errorprone:error_prone_core:2.3.1"
 
-
 dependencies {
+    // Dependencies needed at runtime and compile-time:
     implementation 'com.google.guava:guava:26.0-jre'
 
+    // Dependencies needed only for running tests:
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-core:2.+'
     testImplementation "com.google.truth:truth:0.30"
 
+    // Dependencies needed when running ErrorProne checks:
     errorprone errorprone_core_lib
-    // To allow optional Errorprone annotations like @Immutable:
-    compileOnly errorprone_core_lib
 }
 
+// Make a source code JAR archive.
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allJava
+}
+
+// Make a Javadoc JAR archive.
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
+
+            // Include the sources and Javadoc JAR files when
+            // publishing.
+            artifact sourcesJar
+            artifact javadocJar
+
             afterEvaluate {
                 groupId = 'com.pervasivecode'
                 artifactId = 'java-time-utils'
@@ -57,8 +77,10 @@ publishing {
                         developer {
                             id = 'jamieflournoy'
                             name = 'Jamie Flournoy'
+                            organization = 'Pervasive Code'
                             email = 'jamie@pervasivecode.com'
                             url = 'https://github.com/JamieFlournoy'
+                            organizationUrl = 'http://www.pervasivecode.com/'
                         }
                     }
 
@@ -77,4 +99,21 @@ publishing {
             }
         }
     }
+
+    // Publish directly to a local directory (not the local Maven
+    // repository, but a directory under the build dir), for
+    // inspection & manual uploading.
+    repositories {
+        maven {
+            name = 'buildRepo'
+            url = "file://${buildDir}/repo"
+        }
+    }
+}
+
+signing {
+    // Sign assets that are destined for publication in a Maven Java
+    // archive.
+    useGpgCmd()
+    sign publishing.publications.mavenJava
 }
