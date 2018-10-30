@@ -82,6 +82,13 @@ publishing {
             afterEvaluate {
                 groupId = 'com.pervasivecode'
                 artifactId = 'java-time-utils'
+
+                // This must end in "-SNAPSHOT" for publishing assets
+                // to a "snapshot" Maven repository to work, or else
+                // the Gradle task will fail with a 400 Bad Request
+                // response. Likewise, publishing assets to a release
+                // staging repository will only work if this version
+                // does _not_ end in "-SNAPSHOT".
                 version = '0.9'
 
                 pom {
@@ -128,8 +135,32 @@ publishing {
     // inspection & manual uploading.
     repositories {
         maven {
-            name = 'buildRepo'
+            name = 'buildDir'
             url = "file://${buildDir}/repo"
+        }
+        // Note: to deploy to this repository, you must set the
+        // OSSRH_PASSWORD environment variable. Also, the publication
+        // version (see above) must end in "-SNAPSHOT" or this will
+        // fail with an HTTP response code of 400 Bad Request.
+        maven {
+            name = 'ossrhSnapshots'
+            url = 'https://oss.sonatype.org/content/repositories/snapshots'
+            credentials {
+                username = ossrhUsername
+                password = System.getenv('OSSRH_PASSWORD')
+            }
+        }
+        // Note: to deploy to this repository, you must set the
+        // OSSRH_PASSWORD environment variable. Also, the publication
+        // version (see above) must _not_ end in "-SNAPSHOT" or this
+        // will fail with an HTTP response code of 400 Bad Request.
+        maven {
+            name = 'ossrhReleaseStaging'
+            url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
+            credentials {
+                username = ossrhUsername
+                password = System.getenv('OSSRH_PASSWORD')
+            }
         }
     }
 }
