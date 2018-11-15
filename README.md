@@ -14,7 +14,7 @@ See the separate [OVERVIEW.md](OVERVIEW.md) file for a description of what inter
 
 ## Including it in your project
 
-Use groupId `com.pervasivecode`, name `java-time-utils`, version `0.9` in your build tool of choice.
+Use groupId `com.pervasivecode`, name `time-utils`, version `0.9` in your build tool of choice.
 
 ### Gradle Example
 
@@ -25,16 +25,16 @@ If you are using Gradle 4.x, put this in your build.properties file:
     mavenCentral();
 
 // in your build.gradle's dependencies {} block:
-    implementation 'com.pervasivecode:java-time-utils:0.9'
+    implementation 'com.pervasivecode:time-utils:0.9'
 
     // or, if you prefer the separated group/name/version syntax:
-    implementation group: 'com.pervasivecode', name: 'java-time-utils', version: '0.9'
+    implementation group: 'com.pervasivecode', name: 'time-utils', version: '0.9'
 ```
 
 
 ## Contributing
 
-See [DEVELOPERS.md](DEVELOPERS.md) and [GRADLE_INTRO.md](GRADLE_INTRO.md) if you want to build and hack on the code yourself. 
+See [DEVELOPERS.md](DEVELOPERS.md) and [GRADLE_INTRO.md](GRADLE_INTRO.md) if you want to build and hack on the code yourself.
 
 
 ## Copyright and License

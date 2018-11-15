@@ -81,7 +81,7 @@ publishing {
 
             afterEvaluate {
                 groupId = 'com.pervasivecode'
-                artifactId = 'java-time-utils'
+                artifactId = 'time-utils'
 
                 // This must end in "-SNAPSHOT" for publishing assets
                 // to a "snapshot" Maven repository to work, or else
