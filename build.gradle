@@ -36,6 +36,7 @@ dependencies {
 
 // Generate Javadoc documentation files from Java source code.
 javadoc {
+    title = 'time-utils API'
     source = sourceSets.main.allJava
     // This classpath value makes the source's dependencies visible to
     // the Javadoc tool.
