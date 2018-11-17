@@ -1,5 +1,10 @@
 # Code Overview
 
+If you prefer Javadocs, they are available on `javadoc.io`:
+
+[![Javadocs](https://www.javadoc.io/badge/com.pervasivecode/time-utils.svg)](https://www.javadoc.io/doc/com.pervasivecode/time-utils)
+
+
 ## Interfaces
 
 [CurrentNanosSource](src/main/java/com/pervasivecode/utils/time/api/CurrentNanosSource.java) provides the current time in units of nanoseconds since the Unix epoch.

@@ -10,7 +10,12 @@ This library provides interfaces and implementations that are useful for this so
 
 ## Overview of included classes
 
+Javadocs are available on `javadoc.io`:
+
+[![Javadocs](https://www.javadoc.io/badge/com.pervasivecode/time-utils.svg)](https://www.javadoc.io/doc/com.pervasivecode/time-utils)
+
 See the separate [OVERVIEW.md](OVERVIEW.md) file for a description of what interfaces and classes are included.
+(Overview content is taken from class Javadoc comments, so there's no need to read both.)
 
 ## Including it in your project
 
