@@ -1,4 +1,4 @@
-package com.pervasivecode.utils.time.impl;
+package com.pervasivecode.utils.time;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -17,6 +17,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.mockito.stubbing.Answer;
 import com.google.common.truth.Truth;
+import com.pervasivecode.utils.time.SimplePeriodicRunner;
 
 public class SimplePeriodicRunnerTest {
   private static final Runnable DUMMY_RUNNABLE = () -> {};

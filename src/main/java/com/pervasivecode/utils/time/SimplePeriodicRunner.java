@@ -1,4 +1,4 @@
-package com.pervasivecode.utils.time.impl;
+package com.pervasivecode.utils.time;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
@@ -6,7 +6,6 @@ import java.time.Duration;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import com.pervasivecode.utils.time.api.PeriodicRunner;
 
 /** A periodic runner of a single {@link Runnable} task. */
 public class SimplePeriodicRunner implements PeriodicRunner {

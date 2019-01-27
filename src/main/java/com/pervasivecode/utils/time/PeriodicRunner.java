@@ -1,4 +1,4 @@
-package com.pervasivecode.utils.time.api;
+package com.pervasivecode.utils.time;
 
 /**
  * An object that can run a single Runnable task repeatedly at a steady rate. Callers can optionally

@@ -1,4 +1,4 @@
-package com.pervasivecode.utils.time.impl;
+package com.pervasivecode.utils.time;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.Mockito.mock;
@@ -10,6 +10,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
+import com.pervasivecode.utils.time.SimplePeriodicRunnerFactory;
 
 public class SimplePeriodicRunnerFactoryTest {
   private ScheduledExecutorService executor;

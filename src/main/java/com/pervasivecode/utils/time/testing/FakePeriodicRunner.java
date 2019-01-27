@@ -2,7 +2,7 @@ package com.pervasivecode.utils.time.testing;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
-import com.pervasivecode.utils.time.api.PeriodicRunner;
+import com.pervasivecode.utils.time.PeriodicRunner;
 
 /**
  * This is a fake implementation of {@link PeriodicRunner}, intended for use by test code.

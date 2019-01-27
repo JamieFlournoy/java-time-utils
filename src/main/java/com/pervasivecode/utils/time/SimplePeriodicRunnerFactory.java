@@ -1,4 +1,4 @@
-package com.pervasivecode.utils.time.impl;
+package com.pervasivecode.utils.time;
 
 import java.time.Duration;
 import java.util.concurrent.ScheduledExecutorService;

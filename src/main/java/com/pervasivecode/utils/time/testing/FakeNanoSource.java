@@ -1,6 +1,6 @@
 package com.pervasivecode.utils.time.testing;
 
-import com.pervasivecode.utils.time.api.CurrentNanosSource;
+import com.pervasivecode.utils.time.CurrentNanosSource;
 
 /**
  * This is a fake implementation of {@link CurrentNanosSource}, intended for use by test code.

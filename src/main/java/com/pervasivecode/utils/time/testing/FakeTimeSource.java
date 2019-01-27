@@ -2,7 +2,7 @@ package com.pervasivecode.utils.time.testing;
 
 import java.time.Duration;
 import java.time.Instant;
-import com.pervasivecode.utils.time.api.TimeSource;
+import com.pervasivecode.utils.time.TimeSource;
 
 /**
  * This is a fake implementation of {@link TimeSource},

@@ -1,4 +1,4 @@
-package com.pervasivecode.utils.time.api;
+package com.pervasivecode.utils.time;
 
 import java.time.Instant;
 

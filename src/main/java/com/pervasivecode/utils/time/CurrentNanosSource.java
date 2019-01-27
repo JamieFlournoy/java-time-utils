@@ -1,4 +1,4 @@
-package com.pervasivecode.utils.time.api;
+package com.pervasivecode.utils.time;
 
 /** An object that provides the current time since the Unix epoch, with nanosecond precision. */
 public interface CurrentNanosSource {
