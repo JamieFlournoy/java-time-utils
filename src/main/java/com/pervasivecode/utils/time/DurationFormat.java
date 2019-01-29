@@ -5,10 +5,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.concurrent.Immutable;
 import com.google.auto.value.AutoValue;
+import com.google.auto.value.extension.memoized.Memoized;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 @AutoValue
+@Immutable
 public abstract class DurationFormat {
+  public enum RemainderHandling { TRUNCATE, ROUND }
+
+  private static final ChronoUnitRange CHRONO_UNIT_RANGE = new ChronoUnitRange();
+
   public abstract Map<ChronoUnit, String> unitSuffixes();
 
   public abstract String partDelimiter();
@@ -19,10 +28,27 @@ public abstract class DurationFormat {
 
   public abstract ChronoUnit smallestUnit();
 
+  public abstract boolean useHalfDays();
+
   public abstract Integer numFractionalDigits();
 
+  public abstract RemainderHandling remainderHandling();
+
   public static Builder builder() {
-    return new AutoValue_DurationFormat.Builder();
+    return new AutoValue_DurationFormat.Builder()
+        .setUseHalfDays(false)
+        .setRemainderHandling(RemainderHandling.TRUNCATE);
+  }
+
+  @Memoized
+  public List<ChronoUnit> units() {
+    List<ChronoUnit> rawRange = CHRONO_UNIT_RANGE.range(smallestUnit(), largestUnit());
+    if (useHalfDays()) {
+      return rawRange;
+    }
+    ArrayList<ChronoUnit> mutableRange = Lists.newArrayList(rawRange);
+    mutableRange.remove(ChronoUnit.HALF_DAYS);
+    return ImmutableList.copyOf(mutableRange);
   }
 
   @AutoValue.Builder
@@ -37,22 +63,30 @@ public abstract class DurationFormat {
 
     public abstract Builder setSmallestUnit(ChronoUnit smallestUnit);
 
+    public abstract Builder setUseHalfDays(boolean useHalfDays);
+
     public abstract Builder setNumFractionalDigits(Integer numFractionalDigits);
+
+    public abstract Builder setRemainderHandling(RemainderHandling remainderHandling);
 
     protected abstract DurationFormat buildInternal();
 
     public DurationFormat build() {
       DurationFormat format = buildInternal();
+      requireSmallestNotLargerThanLargest(format);
+      requireLabelsForUsableUnits(format);
 
-      ChronoUnit smallestUnit = format.smallestUnit();
-      ChronoUnit largestUnit = format.largestUnit();
-      if (smallestUnit.getDuration().compareTo(largestUnit.getDuration()) > 0) {
-        String message = String.format("Invalid range of units: smallest is %s, largest is %s",
-            smallestUnit.name(), largestUnit.name());
-        throw new IllegalArgumentException(message);
+      if (format.numFractionalDigits() < 0) {
+        throw new IllegalArgumentException(
+            "The number of fractional digits must be nonnegative. Got: "
+                + format.numFractionalDigits());
       }
 
-      List<ChronoUnit> formattingUnits = new ChronoUnitRange().range(smallestUnit, largestUnit);
+      return format;
+    }
+
+    private static void requireLabelsForUsableUnits(DurationFormat format) {
+      List<ChronoUnit> formattingUnits = format.units();
       Set<ChronoUnit> unitsWithLabels = format.unitSuffixes().keySet();
       ArrayList<ChronoUnit> unitsWithoutLabels = new ArrayList<>();
       unitsWithoutLabels.addAll(formattingUnits);
@@ -70,16 +104,19 @@ public abstract class DurationFormat {
         }
         throw new IllegalArgumentException(sb.toString());
       }
-
-      if (format.numFractionalDigits() < 0) {
-        throw new IllegalArgumentException(
-            "The number of fractional digits must be nonnegative. Got: "
-                + format.numFractionalDigits());
-      }
-      return format;
     }
 
-  }
+    private static void requireSmallestNotLargerThanLargest(DurationFormat format) {
+      ChronoUnit smallestUnit = format.smallestUnit();
+      ChronoUnit largestUnit = format.largestUnit();
+      if (smallestUnit.getDuration().compareTo(largestUnit.getDuration()) > 0) {
+        throw new IllegalArgumentException(
+            String.format("Invalid range of units: smallest is %s, largest is %s",
+                smallestUnit.name(), largestUnit.name()));
+      }
+    }
+
+}
 
   public static Builder builder(DurationFormat format) {
     return builder() //
@@ -88,6 +125,8 @@ public abstract class DurationFormat {
         .setFractionDelimiter(format.fractionDelimiter()) //
         .setLargestUnit(format.largestUnit()) //
         .setSmallestUnit(format.smallestUnit()) //
-        .setNumFractionalDigits(format.numFractionalDigits());
+        .setNumFractionalDigits(format.numFractionalDigits())
+        .setUseHalfDays(format.useHalfDays())
+        .setRemainderHandling(format.remainderHandling());
   }
 }

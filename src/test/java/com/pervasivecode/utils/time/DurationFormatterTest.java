@@ -1,87 +1,122 @@
 package com.pervasivecode.utils.time;
 
-import static com.google.common.truth.Truth.assertThat;
+import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.MILLIS;
+import static java.time.temporal.ChronoUnit.MINUTES;
+import static java.time.temporal.ChronoUnit.NANOS;
+import static java.time.temporal.ChronoUnit.SECONDS;
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
+import org.junit.Ignore;
 import org.junit.Test;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.truth.Truth;
 
 public class DurationFormatterTest {
-  private static void checkDurationFormat(Duration duration, String expected) {
-    assertThat(DurationFormatter.US().format(duration)).isEqualTo(expected);
-  }
-
-  private static void checkDurationFormat(Duration duration, ChronoUnit largestUnit,
-      String expected) {
-    assertThat(DurationFormatter.US().format(duration, largestUnit)).isEqualTo(expected);
-  }
-
-  private static void checkDurationFormat(Duration duration, ChronoUnit largestUnit,
-      ChronoUnit smallestUnit, String expected) {
-    assertThat(DurationFormatter.US().format(duration, largestUnit, smallestUnit))
-        .isEqualTo(expected);
+  private static void checkFormattedDuration(DurationFormatter formatter, Duration duration,
+      String expectedFormattedValue) {
+    Truth.assertThat(formatter.format(duration)).isEqualTo(expectedFormattedValue);
   }
 
   @Test
-  public void format_duration_withSeveralMillis_shouldUseMillis() {
-    checkDurationFormat(Duration.ofMillis(17), "17ms");
+  public void format_withWeeksToMillis_shouldWork() {
+    DurationFormatter formatter = new DurationFormatter(DurationFormats.getUsDefaultInstance());
+
+    checkFormattedDuration(formatter, Duration.ofMillis(17), "17ms");
+    checkFormattedDuration(formatter, Duration.ofMillis(137), "137ms");
+    checkFormattedDuration(formatter, Duration.ofMillis(1370), "1s 370ms");
+    checkFormattedDuration(formatter, Duration.ofMillis(1_370_223), "22m 50s 223ms");
+    checkFormattedDuration(formatter, Duration.ofMillis(2_521_320_000L), "4w 1d 4h 22m");
+    checkFormattedDuration(formatter, Duration.ofMillis(2_521_370_000L), "4w 1d 4h 22m 50s");
+    checkFormattedDuration(formatter, Duration.ofMillis(2_521_370_223L), "4w 1d 4h 22m 50s 223ms");
+
+    checkFormattedDuration(formatter, Duration.ZERO, "0s");
+
+    checkFormattedDuration(formatter, Duration.ofMinutes(1), "1m");
+    checkFormattedDuration(formatter, Duration.ofMinutes(15), "15m");
+
+    checkFormattedDuration(formatter, Duration.ofHours(1), "1h");
+
+    checkFormattedDuration(formatter, Duration.ofDays(8), "1w 1d");
+    checkFormattedDuration(formatter, Duration.ofDays(17), "2w 3d");
+  }
+
+  @Ignore
+  @Test
+  public void format_withWeeksToFractionalSeconds_shouldWork() {
+    DurationFormat format = DurationFormat.builder(DurationFormats.getUsDefaultInstance()) //
+        .setSmallestUnit(SECONDS) //
+        .setNumFractionalDigits(3) //
+        .build();
+    DurationFormatter formatter = new DurationFormatter(format);
+    checkFormattedDuration(formatter, Duration.ofMillis(1370), "1.370s");
+    checkFormattedDuration(formatter, Duration.ofMillis(1_370_223), "22m 50.223s");
   }
 
   @Test
-  public void format_duration_withZero_shouldUseSeconds() {
-    checkDurationFormat(Duration.ofSeconds(0), "0s");
+  public void format_withMinutesToMillis_shouldWork() {
+    DurationFormat format = DurationFormat.builder(DurationFormats.getUsDefaultInstance()) //
+        .setLargestUnit(MINUTES) //
+        .setSmallestUnit(MILLIS) //
+        .build();
+    DurationFormatter formatter = new DurationFormatter(format);
+    checkFormattedDuration(formatter, Duration.ofMillis(2_521_370_223L), "42022m 50s 223ms");
   }
 
   @Test
-  public void format_duration_withSeveralMillisAndLargestUnitMinutes_shouldUseMillis() {
-    checkDurationFormat(Duration.ofMillis(17L), ChronoUnit.MINUTES, "17ms");
+  public void format_withJustWholeMillis_shouldWork() {
+    DurationFormat format = DurationFormat.builder(DurationFormats.getUsDefaultInstance()) //
+        .setLargestUnit(MILLIS) //
+        .setSmallestUnit(MILLIS) //
+        .build();
+    DurationFormatter formatter = new DurationFormatter(format);
+    checkFormattedDuration(formatter, Duration.ofMinutes(15), "900000ms");
   }
 
   @Test
-  public void format_duration_withHundredsOfMillis_shouldUseMillis() {
-    checkDurationFormat(Duration.ofMillis(137), "137ms");
+  public void format_withJustWholeMinutes_shouldWork() {
+    DurationFormat format = DurationFormat.builder(DurationFormats.getUsDefaultInstance()) //
+        .setLargestUnit(MINUTES) //
+        .setSmallestUnit(MINUTES) //
+        .build();
+    DurationFormatter formatter = new DurationFormatter(format);
+    checkFormattedDuration(formatter, Duration.ofMillis(2_521_370_223L), "42022m");
   }
 
-  @Test
-  public void format_duration_withThousandsOfMillis_shouldUseSeconds() {
-    checkDurationFormat(Duration.ofMillis(1370), "1.370s");
-  }
 
   @Test
-  public void format_duration_withWholeMinutes_shouldUseMinutes() {
-    checkDurationFormat(Duration.ofMinutes(15), ChronoUnit.HOURS, ChronoUnit.MINUTES, "15m");
+  public void format_withJustWholeDays_shouldWork() {
+    DurationFormat format = DurationFormat.builder(DurationFormats.getUsDefaultInstance()) //
+        .setLargestUnit(DAYS) //
+        .setSmallestUnit(DAYS) //
+        .build();
+    DurationFormatter formatter = new DurationFormatter(format);
+    checkFormattedDuration(formatter, Duration.ofHours(10), "0d");
+    checkFormattedDuration(formatter, Duration.ofDays(8), "8d");
   }
 
+  @Ignore
   @Test
-  public void format_duration_withWholeMinutesAndLargestUnitMillis_shouldUseMillis() {
-    checkDurationFormat(Duration.ofMinutes(15), ChronoUnit.MILLIS, "900000ms");
+  public void format_aVeryLargeNumberOfNanos_withJustNanos_shouldWork() {
+    DurationFormat format = DurationFormat.builder(DurationFormats.getUsDefaultInstance()) //
+        .setUnitSuffixes(ImmutableMap.of(NANOS, "ns")).setLargestUnit(NANOS) //
+        .setSmallestUnit(NANOS) //
+        .build();
+    DurationFormatter formatter = new DurationFormatter(format);
+    checkFormattedDuration(formatter, Duration.ofDays(0), "0ns");
+    checkFormattedDuration(formatter, Duration.ofDays(12000), "1036800000000000000ns");
+    checkFormattedDuration(formatter, Duration.ofDays(120000), "10368000000000000000ns");
   }
 
-  @Test
-  public void format_duration_withMillionsOfMillis_shouldUseMinutesAndSeconds() {
-    checkDurationFormat(Duration.ofMillis(1_370_223), "22m 50s");
-  }
+  // TODO RemainderHandling
 
-  @Test
-  public void format_duration_withBillionsOfMillis_shouldUseHoursMinutesAndSeconds() {
-    checkDurationFormat(Duration.ofMillis(2_521_370_223L), "4w 1d 4h 22m 50s");
-  }
+  // TODO negative durations
 
-  @Test
-  public void format_duration_withBillionsOfMillisAndLargestUnitMinutes_shouldUseMinutesSeconds() {
-    checkDurationFormat(Duration.ofMillis(2_521_370_223L), ChronoUnit.MINUTES, "42022m 50s");
-  }
+  // @Test
+  // public void format_durations_inJavadocComments_shouldFormatAsDescribed() {
+  // checkDurationFormat(Duration.ofMillis(12345), "12.345s");
+  // checkDurationFormat(Duration.ofMillis(345), "345ms");
+  // checkDurationFormat(Duration.ofHours(1), "1h 0m 0s");
+  // checkDurationFormat(Duration.ofSeconds(86400 - 1), "23h 59m 59s");
+  // }
 
-  @Test
-  public void format_duration_withBillionsOfMillisAndOnlyUnitMinutes_shouldUseMinutesSeconds() {
-    checkDurationFormat(Duration.ofMillis(2_521_370_223L), ChronoUnit.MINUTES, ChronoUnit.MINUTES,
-        "42022m");
-  }
-
-  @Test
-  public void format_durations_inJavadocComments_shouldFormatAsDescribed() {
-    checkDurationFormat(Duration.ofMillis(12345), "12.345s");
-    checkDurationFormat(Duration.ofMillis(345), "345ms");
-    checkDurationFormat(Duration.ofSeconds(3600), "1h 0m 0s");
-    checkDurationFormat(Duration.ofSeconds(86400 - 1), "23h 59m 59s");
-  }
 }
