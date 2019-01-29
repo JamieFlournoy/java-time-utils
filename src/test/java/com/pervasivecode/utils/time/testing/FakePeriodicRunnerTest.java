@@ -7,7 +7,8 @@ import org.junit.Test;
 import com.google.common.truth.Truth;
 
 public class FakePeriodicRunnerTest {
-  private static final Runnable DUMMY_RUNNABLE = () -> {};
+  private static final Runnable DUMMY_RUNNABLE = () -> {
+  };
   private FakePeriodicRunner runner;
 
   @Before
@@ -33,21 +34,22 @@ public class FakePeriodicRunnerTest {
       runner.start();
       Truth.assert_().fail("Expected IllegalStateException.");
     } catch (IllegalStateException e) {
-      assertThat(e).hasMessage("No periodic task has been set.");
+      assertThat(e).hasMessageThat().isEqualTo("No periodic task has been set.");
     }
   }
 
   @Test
   public void start_withTask_shouldEnableRunOnce() {
     final AtomicLong counter = new AtomicLong(1L);
-    Runnable task = ()->counter.incrementAndGet();
+    Runnable task = () -> counter.incrementAndGet();
 
     try {
       runner.setPeriodicTask(task);
       runner.runOnce();
       Truth.assert_().fail("Expected IllegalStateException.");
     } catch (IllegalStateException e) {
-      assertThat(e).hasMessage("The periodic task has not been started yet, or has been stopped.");
+      assertThat(e).hasMessageThat()
+          .isEqualTo("The periodic task has not been started yet, or has been stopped.");
     }
 
     runner.start();
@@ -73,10 +75,11 @@ public class FakePeriodicRunnerTest {
       runner.runOnce();
       Truth.assert_().fail("Expected IllegalStateException.");
     } catch (IllegalStateException e) {
-      assertThat(e).hasMessage("The periodic task has not been started yet, or has been stopped.");
+      assertThat(e).hasMessageThat()
+          .isEqualTo("The periodic task has not been started yet, or has been stopped.");
     }
   }
-  
+
   @Test
   public void runOnce_withStoppedTask_shouldThrow() {
     runner.setPeriodicTask(DUMMY_RUNNABLE);
@@ -86,7 +89,8 @@ public class FakePeriodicRunnerTest {
       runner.runOnce();
       Truth.assert_().fail("Expected IllegalStateException.");
     } catch (IllegalStateException e) {
-      assertThat(e).hasMessage("The periodic task has not been started yet, or has been stopped.");
+      assertThat(e).hasMessageThat()
+          .isEqualTo("The periodic task has not been started yet, or has been stopped.");
     }
   }
 
@@ -97,7 +101,7 @@ public class FakePeriodicRunnerTest {
       runner.stop();
       Truth.assert_().fail("Expected IllegalStateException.");
     } catch (IllegalStateException e) {
-      assertThat(e).hasMessage("The periodic task is not running.");
+      assertThat(e).hasMessageThat().isEqualTo("The periodic task is not running.");
     }
   }
 }

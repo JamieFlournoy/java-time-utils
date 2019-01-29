@@ -20,7 +20,8 @@ import com.google.common.truth.Truth;
 import com.pervasivecode.utils.time.SimplePeriodicRunner;
 
 public class SimplePeriodicRunnerTest {
-  private static final Runnable DUMMY_RUNNABLE = () -> {};
+  private static final Runnable DUMMY_RUNNABLE = () -> {
+  };
 
   private static final Duration TEST_PERIOD_DURATION = Duration.ofSeconds(37);
 
@@ -69,13 +70,13 @@ public class SimplePeriodicRunnerTest {
       runner.start();
       Truth.assert_().fail("Expected IllegalStateException.");
     } catch (IllegalStateException e) {
-      assertThat(e).hasMessage("No periodic task has been set.");
+      assertThat(e).hasMessageThat().isEqualTo("No periodic task has been set.");
     }
   }
 
   @Test
   public void start_withTask_shouldScheduleUsingExecutor() {
-    expectTaskToBeScheduled(); 
+    expectTaskToBeScheduled();
     runner.setPeriodicTask(DUMMY_RUNNABLE);
     runner.start();
     // STRICT_STUBS will verify that the stubs set in expectTaskToBeScheduled were actually used, so
@@ -85,7 +86,7 @@ public class SimplePeriodicRunnerTest {
   /** Ensure that a single task isn't scheduled to be called multiple times per interval. */
   @Test
   public void start_withTaskAlreadyStarted_shouldThrow() {
-    expectTaskToBeScheduled(); 
+    expectTaskToBeScheduled();
     runner.setPeriodicTask(DUMMY_RUNNABLE);
     runner.start();
     try {
@@ -103,7 +104,8 @@ public class SimplePeriodicRunnerTest {
       runner.stop();
       Truth.assert_().fail("Expected IllegalStateException.");
     } catch (IllegalStateException e) {
-      assertThat(e).hasMessage("The periodic task has not been started yet, or has been stopped.");
+      assertThat(e).hasMessageThat()
+          .isEqualTo("The periodic task has not been started yet, or has been stopped.");
     }
   }
 
