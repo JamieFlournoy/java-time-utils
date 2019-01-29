@@ -25,14 +25,14 @@ public class ChronoUnitRangeTest {
     assertThat(subRange).containsExactly(DAYS);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void range_withToLargerThanFrom_shouldReturnAscendingRange() {
     ChronoUnitRange range = new ChronoUnitRange();
     List<ChronoUnit> subRange = range.range(DAYS, YEARS);
     assertThat(subRange).containsExactly(DAYS, WEEKS, MONTHS, YEARS);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void range_withToValueLessThanFrom_shouldReturnDescendingRange() {
     ChronoUnitRange range = new ChronoUnitRange();
     List<ChronoUnit> subRange = range.range(YEARS, DAYS);
