@@ -14,8 +14,6 @@ import com.google.common.collect.Lists;
 @AutoValue
 @Immutable
 public abstract class DurationFormat {
-  public enum RemainderHandling { TRUNCATE, ROUND }
-
   private static final ChronoUnitRange CHRONO_UNIT_RANGE = new ChronoUnitRange();
 
   public abstract Map<ChronoUnit, String> unitSuffixes();
@@ -35,8 +33,7 @@ public abstract class DurationFormat {
   public abstract RemainderHandling remainderHandling();
 
   public static Builder builder() {
-    return new AutoValue_DurationFormat.Builder()
-        .setUseHalfDays(false)
+    return new AutoValue_DurationFormat.Builder().setUseHalfDays(false)
         .setRemainderHandling(RemainderHandling.TRUNCATE);
   }
 
@@ -116,7 +113,7 @@ public abstract class DurationFormat {
       }
     }
 
-}
+  }
 
   public static Builder builder(DurationFormat format) {
     return builder() //
@@ -125,8 +122,7 @@ public abstract class DurationFormat {
         .setFractionDelimiter(format.fractionDelimiter()) //
         .setLargestUnit(format.largestUnit()) //
         .setSmallestUnit(format.smallestUnit()) //
-        .setNumFractionalDigits(format.numFractionalDigits())
-        .setUseHalfDays(format.useHalfDays())
+        .setNumFractionalDigits(format.numFractionalDigits()).setUseHalfDays(format.useHalfDays())
         .setRemainderHandling(format.remainderHandling());
   }
 }

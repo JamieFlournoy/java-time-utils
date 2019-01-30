@@ -25,8 +25,8 @@ public class DurationFormatterTest {
     checkFormattedDuration(formatter, Duration.ofMillis(137), "137ms");
     checkFormattedDuration(formatter, Duration.ofMillis(1370), "1s 370ms");
     checkFormattedDuration(formatter, Duration.ofMillis(1_370_223), "22m 50s 223ms");
-    checkFormattedDuration(formatter, Duration.ofMillis(2_521_320_000L), "4w 1d 4h 22m");
-    checkFormattedDuration(formatter, Duration.ofMillis(2_521_370_000L), "4w 1d 4h 22m 50s");
+    checkFormattedDuration(formatter, Duration.ofMinutes(42022), "4w 1d 4h 22m");
+    checkFormattedDuration(formatter, Duration.ofSeconds(2521370), "4w 1d 4h 22m 50s");
     checkFormattedDuration(formatter, Duration.ofMillis(2_521_370_223L), "4w 1d 4h 22m 50s 223ms");
 
     checkFormattedDuration(formatter, Duration.ZERO, "0s");
@@ -40,7 +40,7 @@ public class DurationFormatterTest {
     checkFormattedDuration(formatter, Duration.ofDays(17), "2w 3d");
   }
 
-  @Ignore
+  @Ignore // TODO handle fractions.
   @Test
   public void format_withWeeksToFractionalSeconds_shouldWork() {
     DurationFormat format = DurationFormat.builder(DurationFormats.getUsDefaultInstance()) //
@@ -82,7 +82,6 @@ public class DurationFormatterTest {
     checkFormattedDuration(formatter, Duration.ofMillis(2_521_370_223L), "42022m");
   }
 
-
   @Test
   public void format_withJustWholeDays_shouldWork() {
     DurationFormat format = DurationFormat.builder(DurationFormats.getUsDefaultInstance()) //
@@ -94,7 +93,6 @@ public class DurationFormatterTest {
     checkFormattedDuration(formatter, Duration.ofDays(8), "8d");
   }
 
-  @Ignore
   @Test
   public void format_aVeryLargeNumberOfNanos_withJustNanos_shouldWork() {
     DurationFormat format = DurationFormat.builder(DurationFormats.getUsDefaultInstance()) //
@@ -107,16 +105,7 @@ public class DurationFormatterTest {
     checkFormattedDuration(formatter, Duration.ofDays(120000), "10368000000000000000ns");
   }
 
-  // TODO RemainderHandling
+  // TODO Handle RemainderHandling other than TRUNCATE.
 
-  // TODO negative durations
-
-  // @Test
-  // public void format_durations_inJavadocComments_shouldFormatAsDescribed() {
-  // checkDurationFormat(Duration.ofMillis(12345), "12.345s");
-  // checkDurationFormat(Duration.ofMillis(345), "345ms");
-  // checkDurationFormat(Duration.ofHours(1), "1h 0m 0s");
-  // checkDurationFormat(Duration.ofSeconds(86400 - 1), "23h 59m 59s");
-  // }
-
+  // TODO Handle negative durations.
 }
