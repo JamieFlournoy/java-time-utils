@@ -6,7 +6,6 @@ import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.time.temporal.ChronoUnit.NANOS;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import java.time.Duration;
-import org.junit.Ignore;
 import org.junit.Test;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.truth.Truth;
@@ -40,7 +39,6 @@ public class DurationFormatterTest {
     checkFormattedDuration(formatter, Duration.ofDays(17), "2w 3d");
   }
 
-  @Ignore // TODO handle fractions.
   @Test
   public void format_withWeeksToFractionalSeconds_shouldWork() {
     DurationFormat format = DurationFormat.builder(DurationFormats.getUsDefaultInstance()) //
@@ -48,7 +46,7 @@ public class DurationFormatterTest {
         .setNumFractionalDigits(3) //
         .build();
     DurationFormatter formatter = new DurationFormatter(format);
-    checkFormattedDuration(formatter, Duration.ofMillis(1370), "1.370s");
+    checkFormattedDuration(formatter, Duration.ofMillis(1370), "1.37s");
     checkFormattedDuration(formatter, Duration.ofMillis(1_370_223), "22m 50.223s");
   }
 
@@ -103,6 +101,7 @@ public class DurationFormatterTest {
     checkFormattedDuration(formatter, Duration.ofDays(0), "0ns");
     checkFormattedDuration(formatter, Duration.ofDays(12000), "1036800000000000000ns");
     checkFormattedDuration(formatter, Duration.ofDays(120000), "10368000000000000000ns");
+    checkFormattedDuration(formatter, Duration.ofDays(1200000), "103680000000000000000ns");
   }
 
   // TODO Handle RemainderHandling other than TRUNCATE.

@@ -2,10 +2,15 @@ package com.pervasivecode.utils.time;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Objects.requireNonNull;
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.text.NumberFormat;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Locale;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 
@@ -54,9 +59,21 @@ public class DurationFormatter {
         continue;
       }
 
-      // TODO handle fractions
       StringBuilder sb = new StringBuilder();
-      sb.append(partValue);
+
+      if (currentUnit == format.smallestUnit() && format.numFractionalDigits() > 0) {
+        BigDecimal partValueWithFraction = new BigDecimal(partValue) //
+            .add(new BigDecimal(bigNanosRemaining).divide(new BigDecimal(currentUnitInNanos)));
+        // TODO get this from the DurationFormat
+        partValueWithFraction
+            .round(new MathContext(format.numFractionalDigits(), RoundingMode.HALF_EVEN));
+        NumberFormat nf = NumberFormat.getInstance(Locale.US);
+        String fractionPart = nf.format(partValueWithFraction);
+        sb.append(fractionPart);
+      } else {
+        sb.append(partValue);
+      }
+
       sb.append(format.unitSuffixes().get(currentUnit));
       parts.add(sb.toString());
 
