@@ -17,6 +17,17 @@ public class DurationFormatterTest {
   }
 
   @Test
+  public void format_negativeDuration_withWeeksToMillis_shouldWork() {
+    DurationFormatter formatter = new DurationFormatter(DurationFormats.getUsDefaultInstance());
+
+    checkFormattedDuration(formatter, Duration.ofSeconds(-2521370), "-4w 1d 4h 22m 50s");
+    checkFormattedDuration(formatter, Duration.ofMillis(-2_521_370_223L),
+        "-4w 1d 4h 22m 50s 223ms");
+    checkFormattedDuration(formatter, Duration.ofHours(-1), "-1h");
+    checkFormattedDuration(formatter, Duration.ofHours(-25), "-1d 1h");
+  }
+
+  @Test
   public void format_withWeeksToMillis_shouldWork() {
     DurationFormatter formatter = new DurationFormatter(DurationFormats.getUsDefaultInstance());
 
@@ -27,6 +38,7 @@ public class DurationFormatterTest {
     checkFormattedDuration(formatter, Duration.ofMinutes(42022), "4w 1d 4h 22m");
     checkFormattedDuration(formatter, Duration.ofSeconds(2521370), "4w 1d 4h 22m 50s");
     checkFormattedDuration(formatter, Duration.ofMillis(2_521_370_223L), "4w 1d 4h 22m 50s 223ms");
+
 
     checkFormattedDuration(formatter, Duration.ZERO, "0s");
 
@@ -104,7 +116,17 @@ public class DurationFormatterTest {
     checkFormattedDuration(formatter, Duration.ofDays(1200000), "103680000000000000000ns");
   }
 
-  // TODO Handle RemainderHandling other than TRUNCATE.
+  @Test
+  public void format_aVeryLargeNegativeNumberOfNanos_withJustNanos_shouldWork() {
+    DurationFormat format = DurationFormat.builder(DurationFormats.getUsDefaultInstance()) //
+        .setUnitSuffixes(ImmutableMap.of(NANOS, "ns")).setLargestUnit(NANOS) //
+        .setSmallestUnit(NANOS) //
+        .build();
+    DurationFormatter formatter = new DurationFormatter(format);
+    checkFormattedDuration(formatter, Duration.ofDays(-12000), "-1036800000000000000ns");
+    checkFormattedDuration(formatter, Duration.ofDays(-120000), "-10368000000000000000ns");
+    checkFormattedDuration(formatter, Duration.ofDays(-1200000), "-103680000000000000000ns");
+  }
 
-  // TODO Handle negative durations.
+  // TODO Handle RemainderHandling other than TRUNCATE.
 }

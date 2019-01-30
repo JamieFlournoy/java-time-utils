@@ -54,9 +54,15 @@ public class DurationFormatter {
       BigInteger partValue = quotientAndRemainder[0];
       bigNanosRemaining = quotientAndRemainder[1];
 
-      // Skip leading parts whose value is zero.
-      if (partValue.equals(BigInteger.ZERO) && parts.isEmpty()) {
-        continue;
+      if (parts.isEmpty()) {
+        if (partValue.equals(BigInteger.ZERO)) {
+          // Skip leading parts whose value is zero.
+          continue;
+        } else {
+          // If the duration is negative, only show the first part as a negative value.
+          // Example: Duration.ofHours(-25) -> "-1d 1h" rather than "-1d -1h".
+          bigNanosRemaining = bigNanosRemaining.abs();
+        }
       }
 
       StringBuilder sb = new StringBuilder();
@@ -64,7 +70,7 @@ public class DurationFormatter {
       if (currentUnit == format.smallestUnit() && format.numFractionalDigits() > 0) {
         BigDecimal partValueWithFraction = new BigDecimal(partValue) //
             .add(new BigDecimal(bigNanosRemaining).divide(new BigDecimal(currentUnitInNanos)));
-        // TODO get this from the DurationFormat
+        // TODO get the NumberFormat from the DurationFormat
         partValueWithFraction
             .round(new MathContext(format.numFractionalDigits(), RoundingMode.HALF_EVEN));
         NumberFormat nf = NumberFormat.getInstance(Locale.US);
