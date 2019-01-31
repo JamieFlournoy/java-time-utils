@@ -6,7 +6,9 @@ import static java.time.temporal.ChronoUnit.MILLIS;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.time.temporal.ChronoUnit.WEEKS;
+import java.text.NumberFormat;
 import java.time.temporal.ChronoUnit;
+import java.util.Locale;
 import com.google.common.collect.ImmutableMap;
 
 public class DurationFormats {
@@ -29,11 +31,11 @@ public class DurationFormats {
     return DurationFormat.builder() //
         .setUnitSuffixes(unitSuffixes) //
         .setPartDelimiter(" ") //
-        .setFractionDelimiter(".") //
+        .setNumberFormat(NumberFormat.getInstance(Locale.US)) //
         .setLargestUnit(WEEKS) //
         .setSmallestUnit(MILLIS) //
+        .setUnitForZeroDuration(ChronoUnit.SECONDS) //
         .setNumFractionalDigits(0) //
         .build();
   }
-
 }

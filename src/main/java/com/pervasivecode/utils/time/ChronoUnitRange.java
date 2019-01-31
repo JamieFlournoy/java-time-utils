@@ -2,7 +2,9 @@ package com.pervasivecode.utils.time;
 
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
+import javax.annotation.concurrent.Immutable;
 
+@Immutable
 public class ChronoUnitRange extends ReorderedEnumRange<ChronoUnit> {
   private static final Comparator<ChronoUnit> DURATION_COMPARATOR =
       (unit, otherUnit) -> unit.compareTo(otherUnit);

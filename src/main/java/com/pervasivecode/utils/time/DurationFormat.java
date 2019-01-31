@@ -1,5 +1,7 @@
 package com.pervasivecode.utils.time;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import java.text.NumberFormat;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +22,13 @@ public abstract class DurationFormat {
 
   public abstract String partDelimiter();
 
-  public abstract String fractionDelimiter();
+  public abstract NumberFormat numberFormat();
 
   public abstract ChronoUnit largestUnit();
 
   public abstract ChronoUnit smallestUnit();
+
+  public abstract ChronoUnit unitForZeroDuration();
 
   public abstract boolean useHalfDays();
 
@@ -33,7 +37,8 @@ public abstract class DurationFormat {
   public abstract RemainderHandling remainderHandling();
 
   public static Builder builder() {
-    return new AutoValue_DurationFormat.Builder().setUseHalfDays(false)
+    return new AutoValue_DurationFormat.Builder() //
+        .setUseHalfDays(false) //
         .setRemainderHandling(RemainderHandling.TRUNCATE);
   }
 
@@ -54,11 +59,21 @@ public abstract class DurationFormat {
 
     public abstract Builder setPartDelimiter(String partDelimiter);
 
-    public abstract Builder setFractionDelimiter(String fractionDelimiter);
+    /**
+     * Note: the rounding mode and number of fraction digits properties of this NumberFormat
+     * instance will be ignored. The DurationFormatter will set these based on the values passed to
+     * {@link #setNumFractionalDigits(Integer)} and {@link #setRemainderHandling(RemainderHandling).
+     *
+     * @param numberFormat
+     * @return
+     */
+    public abstract Builder setNumberFormat(NumberFormat numberFormat);
 
     public abstract Builder setLargestUnit(ChronoUnit largestUnit);
 
     public abstract Builder setSmallestUnit(ChronoUnit smallestUnit);
+
+    public abstract Builder setUnitForZeroDuration(ChronoUnit unitForZeroDuration);
 
     public abstract Builder setUseHalfDays(boolean useHalfDays);
 
@@ -72,12 +87,12 @@ public abstract class DurationFormat {
       DurationFormat format = buildInternal();
       requireSmallestNotLargerThanLargest(format);
       requireLabelsForUsableUnits(format);
-
-      if (format.numFractionalDigits() < 0) {
-        throw new IllegalArgumentException(
-            "The number of fractional digits must be nonnegative. Got: "
-                + format.numFractionalDigits());
-      }
+      checkArgument(format.units().contains(format.unitForZeroDuration()),
+          "The unitForZeroDuration '%s' is not in the list of units: %s.",
+          format.unitForZeroDuration(), format.units());
+      checkArgument(format.numFractionalDigits() >= 0,
+          "The number of fractional digits must be nonnegative. Got: %d",
+          format.numFractionalDigits());
 
       return format;
     }
@@ -119,10 +134,12 @@ public abstract class DurationFormat {
     return builder() //
         .setUnitSuffixes(format.unitSuffixes()) //
         .setPartDelimiter(format.partDelimiter()) //
-        .setFractionDelimiter(format.fractionDelimiter()) //
+        .setNumberFormat(format.numberFormat()) //
         .setLargestUnit(format.largestUnit()) //
         .setSmallestUnit(format.smallestUnit()) //
-        .setNumFractionalDigits(format.numFractionalDigits()).setUseHalfDays(format.useHalfDays())
+        .setUnitForZeroDuration(format.unitForZeroDuration()) //
+        .setNumFractionalDigits(format.numFractionalDigits()) //
+        .setUseHalfDays(format.useHalfDays()) //
         .setRemainderHandling(format.remainderHandling());
   }
 }

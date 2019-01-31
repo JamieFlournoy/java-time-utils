@@ -1,7 +1,9 @@
 package com.pervasivecode.utils.time;
 
 import static com.google.common.truth.Truth.assertThat;
+import java.text.NumberFormat;
 import java.time.temporal.ChronoUnit;
+import java.util.Locale;
 import org.junit.Test;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.truth.Truth;
@@ -14,9 +16,10 @@ public class DurationFormatTest {
             ChronoUnit.SECONDS, "s", //
             ChronoUnit.MILLIS, "ms")) //
         .setPartDelimiter(" ") //
-        .setFractionDelimiter(".") //
+        .setNumberFormat(NumberFormat.getInstance(Locale.US))
         .setLargestUnit(ChronoUnit.HOURS) //
         .setSmallestUnit(ChronoUnit.MINUTES) //
+        .setUnitForZeroDuration(ChronoUnit.MINUTES) //
         .setNumFractionalDigits(1);
   }
 
@@ -83,6 +86,20 @@ public class DurationFormatTest {
     }
   }
 
+  @Test
+  public void build_withUnitForZeroDurationNotInSmallestToLargestUnitRange_shouldThrow() {
+    try {
+      validBuilder() //
+          .setLargestUnit(ChronoUnit.MINUTES) //
+          .setSmallestUnit(ChronoUnit.MILLIS) //
+          .setUnitForZeroDuration(ChronoUnit.HOURS) //
+          .build();
+      Truth.assert_().fail("Expected an exception here.");
+    } catch (IllegalArgumentException iae) {
+      assertThat(iae).hasMessageThat().contains("Zero");
+    }
+  }
+  
   @Test
   public void build_withNegativeFractionalDigits_shouldThrow() {
     try {
