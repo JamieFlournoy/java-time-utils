@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import java.text.NumberFormat;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,17 +12,36 @@ import javax.annotation.concurrent.Immutable;
 import com.google.auto.value.AutoValue;
 import com.google.auto.value.extension.memoized.Memoized;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Lists;
 
 @AutoValue
 @Immutable
 public abstract class DurationFormat {
-  private static final ChronoUnitRange CHRONO_UNIT_RANGE = new ChronoUnitRange();
+  private static final Comparator<ChronoUnit> DURATION_COMPARATOR =
+      (unit, otherUnit) -> unit.compareTo(otherUnit);
+
+  private static final ImmutableSortedSet<ChronoUnit> CHRONO_UNIT_VALUES =
+      ImmutableSortedSet.copyOf(DURATION_COMPARATOR, Lists.newArrayList(ChronoUnit.values()));
+
+  private static ImmutableSortedSet<ChronoUnit> range(ChronoUnit from, ChronoUnit to) {
+    return CHRONO_UNIT_VALUES.headSet(to, true).tailSet(from, true);
+  }
 
   public abstract Map<ChronoUnit, String> unitSuffixes();
 
   public abstract String partDelimiter();
 
+  /**
+   * The NumberFormat which the DurationFormatter will use when formatting individual parts of
+   * Duration values.
+   * <p>
+   * Note: the rounding mode and number of fraction digits properties of this NumberFormat instance
+   * will be ignored. The DurationFormatter will set these based on the values of
+   * {@link #numFractionalDigits()} and {@link #remainderHandling()}.
+   *
+   * @return the NumberFormat.
+   */
   public abstract NumberFormat numberFormat();
 
   public abstract ChronoUnit largestUnit();
@@ -44,13 +64,14 @@ public abstract class DurationFormat {
 
   @Memoized
   public List<ChronoUnit> units() {
-    List<ChronoUnit> rawRange = CHRONO_UNIT_RANGE.range(smallestUnit(), largestUnit());
-    if (useHalfDays()) {
-      return rawRange;
+    ImmutableSortedSet<ChronoUnit> rawRange = range(smallestUnit(), largestUnit());
+    if (useHalfDays() || !rawRange.contains(ChronoUnit.HALF_DAYS)) {
+      return rawRange.asList();
     }
-    ArrayList<ChronoUnit> mutableRange = Lists.newArrayList(rawRange);
-    mutableRange.remove(ChronoUnit.HALF_DAYS);
-    return ImmutableList.copyOf(mutableRange);
+    return ImmutableList.<ChronoUnit>builder() //
+        .addAll(rawRange.headSet(ChronoUnit.HALF_DAYS)) //
+        .addAll(rawRange.tailSet(ChronoUnit.HALF_DAYS, false)) //
+        .build();
   }
 
   @AutoValue.Builder
@@ -60,12 +81,16 @@ public abstract class DurationFormat {
     public abstract Builder setPartDelimiter(String partDelimiter);
 
     /**
+     * Set the NumberFormat which the DurationFormatter should use when formatting individual parts
+     * of Duration values.
+     * <p>
      * Note: the rounding mode and number of fraction digits properties of this NumberFormat
      * instance will be ignored. The DurationFormatter will set these based on the values passed to
-     * {@link #setNumFractionalDigits(Integer)} and {@link #setRemainderHandling(RemainderHandling).
+     * {@link #setNumFractionalDigits(Integer)} and
+     * {@link #setRemainderHandling(RemainderHandling)}.
      *
-     * @param numberFormat
-     * @return
+     * @param numberFormat The NumberFormat to use when formatting duration values.
+     * @return The Builder instance that has been modified by this method.
      */
     public abstract Builder setNumberFormat(NumberFormat numberFormat);
 
@@ -91,7 +116,7 @@ public abstract class DurationFormat {
           "The unitForZeroDuration '%s' is not in the list of units: %s.",
           format.unitForZeroDuration(), format.units());
       checkArgument(format.numFractionalDigits() >= 0,
-          "The number of fractional digits must be nonnegative. Got: %d",
+          "The number of fractional digits must be nonnegative. Got: %s",
           format.numFractionalDigits());
 
       return format;
