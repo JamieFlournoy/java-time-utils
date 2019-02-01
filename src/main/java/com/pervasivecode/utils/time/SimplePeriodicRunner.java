@@ -7,16 +7,23 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-/** A periodic runner of a single {@link Runnable} task. */
+/** A simple implementation of a {@link PeriodicRunner} using a {@link ScheduledExecutorService}. */
 public class SimplePeriodicRunner implements PeriodicRunner {
   private final Duration progressUpdateInterval;
   private final ScheduledExecutorService executor;
   private ScheduledFuture<?> scheduled = null;
   private Runnable task;
 
-  SimplePeriodicRunner(ScheduledExecutorService executor, Duration progressUpdateInterval) {
+  /**
+   * Create a SimplePeriodicRunner.
+   * 
+   * @param executor The executor to use to run the task.
+   * @param period The rate at which the task should be run. This is the amount of time between the
+   *        start of one run of the task and the start of the next run of the task.
+   */
+  SimplePeriodicRunner(ScheduledExecutorService executor, Duration period) {
     this.executor = checkNotNull(executor);
-    this.progressUpdateInterval = checkNotNull(progressUpdateInterval);
+    this.progressUpdateInterval = checkNotNull(period);
   }
 
   @Override

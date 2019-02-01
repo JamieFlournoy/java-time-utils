@@ -3,6 +3,9 @@ package com.pervasivecode.utils.time;
 /**
  * An object that can run a single Runnable task repeatedly at a steady rate. Callers can optionally
  * stop (and then optionally re-start) the Runnable task.
+ * <p>
+ * Callers can also optionally replace a stopped periodic task with a different task; this new task
+ * will be run at the same rate as the previous task.
  */
 public interface PeriodicRunner {
   /**

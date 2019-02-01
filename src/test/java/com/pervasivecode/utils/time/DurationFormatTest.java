@@ -31,7 +31,7 @@ public class DurationFormatTest {
           .build();
       Truth.assert_().fail("Expected an exception here.");
     } catch (IllegalArgumentException iae) {
-      assertThat(iae).hasMessageThat().contains("suffixes");
+      assertThat(iae).hasMessageThat().contains("suffix");
     }
   }
 
@@ -82,7 +82,7 @@ public class DurationFormatTest {
       Truth.assert_().fail("Expected an exception here.");
     } catch (IllegalArgumentException iae) {
       assertThat(iae).hasMessageThat().contains("suffix");
-      assertThat(iae).hasMessageThat().contains("SECONDS");
+      assertThat(iae).hasMessageThat().contains("Seconds");
     }
   }
 

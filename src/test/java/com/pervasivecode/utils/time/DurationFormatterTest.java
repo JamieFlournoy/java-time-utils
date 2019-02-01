@@ -33,8 +33,9 @@ public class DurationFormatterTest {
 
   @Test
   public void format_withHoursToMillisWithRounding_shouldWork() {
-    DurationFormat format = DurationFormat.builder(DurationFormats.getUsDefaultInstance())
-        .setRemainderHandling(RemainderHandling.ROUND).build();
+    DurationFormat format = DurationFormat.builder(DurationFormats.getUsDefaultInstance()) //
+        .setRemainderHandling(DurationRemainderHandling.ROUND_HALF_EVEN) //
+        .build();
     DurationFormatter formatter = new DurationFormatter(format);
 
     checkFormattedDuration(formatter, Duration.ofMillis(1), "1ms");
@@ -71,6 +72,64 @@ public class DurationFormatterTest {
   }
 
   @Test
+  public void format_withWeeksToMillisAndNoPartSeparator_shouldWork() {
+    DurationFormat format = DurationFormat.builder(DurationFormats.getUsDefaultInstance()) //
+        .setPartDelimiter("") //
+        .build();
+    DurationFormatter formatter = new DurationFormatter(format);
+
+    checkFormattedDuration(formatter, Duration.ofMillis(17), "17ms");
+    checkFormattedDuration(formatter, Duration.ofMillis(1_370_223), "22m50s223ms");
+    checkFormattedDuration(formatter, Duration.ofMinutes(42022), "4w1d4h22m");
+  }
+
+  @Test
+  public void format_withLongFancyFormats_shouldWork() {
+    ImmutableMap<ChronoUnit, String> singularSuffixes = ImmutableMap.<ChronoUnit, String>builder()
+        .put(SECONDS, " second") //
+        .put(MINUTES, " minute") //
+        .put(HOURS, " hour") //
+        .put(DAYS, " day") //
+        .build();
+    ImmutableMap<ChronoUnit, String> pluralSuffixes = ImmutableMap.<ChronoUnit, String>builder() //
+        .put(SECONDS, " seconds") //
+        .put(MINUTES, " minutes") //
+        .put(HOURS, " hours") //
+        .put(DAYS, " days") //
+        .build();
+    UnitSuffixProvider suffixProvider =
+        UnitSuffixProviders.singularAndPlural(singularSuffixes, pluralSuffixes);
+    DurationFormat format = DurationFormat.builder() //
+        .setUnitSuffixProvider(suffixProvider) //
+        .setPartDelimiter(", ") //
+        .setNumberFormat(NumberFormat.getInstance(Locale.UK)) //
+        .setLargestUnit(DAYS) //
+        .setSmallestUnit(SECONDS) //
+        .setUnitForZeroDuration(SECONDS) //
+        .setNumFractionalDigits(3) //
+        .setRemainderHandling(DurationRemainderHandling.ROUND_HALF_EVEN) //
+        .build();
+
+    DurationFormatter formatter = new DurationFormatter(format);
+    checkFormattedDuration(formatter, Duration.ofSeconds(-2), "-2 seconds");
+    checkFormattedDuration(formatter, Duration.ofSeconds(-1), "-1 seconds");
+    checkFormattedDuration(formatter, Duration.ZERO, "0 seconds");
+    checkFormattedDuration(formatter, Duration.ofMillis(999), "0.999 seconds");
+    checkFormattedDuration(formatter, Duration.ofNanos(999_999_999), "1 second");
+    checkFormattedDuration(formatter, Duration.ofSeconds(1), "1 second");
+    checkFormattedDuration(formatter, Duration.ofMillis(1370), "1.37 seconds");
+    checkFormattedDuration(formatter, Duration.ofNanos(1_000_499_999), "1 second");
+    checkFormattedDuration(formatter, Duration.ofMillis(50_223), "50.223 seconds");
+    checkFormattedDuration(formatter, Duration.ofMillis(1_370_223), "22 minutes, 50.223 seconds");
+    checkFormattedDuration(formatter, Duration.ofMinutes(262), "4 hours, 22 minutes");
+    checkFormattedDuration(formatter, Duration.ofMinutes(1702), "1 day, 4 hours, 22 minutes");
+    checkFormattedDuration(formatter, Duration.ofSeconds(102170),
+        "1 day, 4 hours, 22 minutes, 50 seconds");
+    checkFormattedDuration(formatter, Duration.ofMillis(102_170_223),
+        "1 day, 4 hours, 22 minutes, 50.223 seconds");
+  }
+
+  @Test
   public void format_withWeeksToFractionalSeconds_shouldWork() {
     DurationFormat format = DurationFormat.builder(DurationFormats.getUsDefaultInstance()) //
         .setSmallestUnit(SECONDS) //
@@ -90,10 +149,9 @@ public class DurationFormatterTest {
         .put(HOURS, "Std.") //
         .put(DAYS, "Tg.") //
         .build();
-
+    UnitSuffixProvider suffixProvider = UnitSuffixProviders.fixedSuffixPerUnit(unitSuffixes);
     DurationFormat format = DurationFormat.builder() //
-        .setUnitSuffixes(unitSuffixes) //
-        .setPartDelimiter(" ") //
+        .setUnitSuffixProvider(suffixProvider).setPartDelimiter(" ") //
         .setNumberFormat(NumberFormat.getInstance(Locale.GERMANY)) //
         .setLargestUnit(DAYS) //
         .setSmallestUnit(SECONDS) //
@@ -161,8 +219,10 @@ public class DurationFormatterTest {
 
   @Test
   public void format_aVeryLargeNumberOfNanos_withJustNanos_shouldWork() {
+    UnitSuffixProvider suffixProvider =
+        UnitSuffixProviders.fixedSuffixPerUnit(ImmutableMap.of(NANOS, "ns"));
     DurationFormat format = DurationFormat.builder(DurationFormats.getUsDefaultInstance()) //
-        .setUnitSuffixes(ImmutableMap.of(NANOS, "ns")) //
+        .setUnitSuffixProvider(suffixProvider) //
         .setLargestUnit(NANOS) //
         .setSmallestUnit(NANOS) //
         .setUnitForZeroDuration(NANOS) //
@@ -177,7 +237,7 @@ public class DurationFormatterTest {
   @Test
   public void format_aVeryLargeNegativeNumberOfNanos_withJustNanos_shouldWork() {
     DurationFormat format = DurationFormat.builder(DurationFormats.getUsDefaultInstance()) //
-        .setUnitSuffixes(ImmutableMap.of(NANOS, "ns")) //
+        .setUnitSuffixProvider(UnitSuffixProviders.fixedSuffixPerUnit(ImmutableMap.of(NANOS, "ns")))
         .setLargestUnit(NANOS) //
         .setSmallestUnit(NANOS) //
         .setUnitForZeroDuration(NANOS) //
