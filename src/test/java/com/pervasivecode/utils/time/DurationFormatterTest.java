@@ -1,17 +1,20 @@
 package com.pervasivecode.utils.time;
 
 import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.HALF_DAYS;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.time.temporal.ChronoUnit.NANOS;
 import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.time.temporal.ChronoUnit.WEEKS;
 import java.text.NumberFormat;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 import org.junit.Test;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.truth.Truth;
 
 public class DurationFormatterTest {
@@ -34,6 +37,8 @@ public class DurationFormatterTest {
   @Test
   public void format_withHoursToMillisWithRounding_shouldWork() {
     DurationFormat format = DurationFormat.builder(DurationFormats.getUsDefaultInstance()) //
+        .setLargestUnit(HOURS) //
+        .setSmallestUnit(MILLIS) //
         .setRemainderHandling(DurationRemainderHandling.ROUND_HALF_EVEN) //
         .build();
     DurationFormatter formatter = new DurationFormatter(format);
@@ -58,7 +63,6 @@ public class DurationFormatterTest {
     checkFormattedDuration(formatter, Duration.ofMinutes(42022), "4w 1d 4h 22m");
     checkFormattedDuration(formatter, Duration.ofSeconds(2521370), "4w 1d 4h 22m 50s");
     checkFormattedDuration(formatter, Duration.ofMillis(2_521_370_223L), "4w 1d 4h 22m 50s 223ms");
-
 
     checkFormattedDuration(formatter, Duration.ZERO, "0s");
 
@@ -85,12 +89,12 @@ public class DurationFormatterTest {
 
   @Test
   public void format_withLongFancyFormats_shouldWork() {
-    ImmutableMap<ChronoUnit, String> singularSuffixes = ImmutableMap.<ChronoUnit, String>builder()
-        .put(SECONDS, " second") //
-        .put(MINUTES, " minute") //
-        .put(HOURS, " hour") //
-        .put(DAYS, " day") //
-        .build();
+    ImmutableMap<ChronoUnit, String> singularSuffixes =
+        ImmutableMap.<ChronoUnit, String>builder().put(SECONDS, " second") //
+            .put(MINUTES, " minute") //
+            .put(HOURS, " hour") //
+            .put(DAYS, " day") //
+            .build();
     ImmutableMap<ChronoUnit, String> pluralSuffixes = ImmutableMap.<ChronoUnit, String>builder() //
         .put(SECONDS, " seconds") //
         .put(MINUTES, " minutes") //
@@ -179,6 +183,18 @@ public class DurationFormatterTest {
         .build();
     DurationFormatter formatter = new DurationFormatter(format);
     checkFormattedDuration(formatter, Duration.ofMillis(2_521_370_223L), "42,022m 50s 223ms");
+  }
+
+  @Test
+  public void format_withJustWeeksAndSeconds_shouldWork() {
+    DurationFormat format = DurationFormat.builder(DurationFormats.getUsDefaultInstance()) //
+        .setLargestUnit(WEEKS) //
+        .setSmallestUnit(SECONDS) //
+        .setSuppressedUnits(ImmutableSet.of(DAYS, HALF_DAYS, HOURS, MINUTES)) //
+        .build();
+    DurationFormatter formatter = new DurationFormatter(format);
+    checkFormattedDuration(formatter, Duration.ofDays(15).plusSeconds(5), "2w 86,405s");
+    checkFormattedDuration(formatter, Duration.ofDays(15).plusSeconds(5).negated(), "-2w 86,405s");
   }
 
   @Test

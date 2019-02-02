@@ -14,7 +14,9 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 
 /**
- * Formatter for a {@link Duration} value.
+ * Formatter for a {@link Duration} value. {@link Duration}s are split into avaialble
+ * {@link ChronoUnits} as specified in the {@link DurationFormat}, using unit {@link Duration}s
+ * obtained from {@link ChronoUnit} values.
  * <p>
  * The format is specified by a {@link DurationFormat}, allowing formats such as:
  * <ul>
@@ -22,7 +24,28 @@ import com.google.common.collect.ImmutableList;
  * <li>1.37s</li>
  * <li>2w 3d</li>
  * <li>4w1d4h22m</li>
+ * <li>6 weeks, 4 days, 23 hours</li>
+ * <li>-1m 30s</li>
  * </ul>
+ * Leading and trailing parts of the formatted representation which have a zero value are not shown.
+ * That is, a formatted value of 70 minutes with allowable units of seconds, minutes, hours, and
+ * days will not be "0d 1h 10m 0s"; instead, it would be formatted as "1h 10m".
+ * <p>
+ * Zero {@link Duration}s are always formatted with the unit specified in
+ * {@link DurationFormat#unitForZeroDuration() unitForZeroDuration}.
+ * <p>
+ * Unit suffix strings are obtained from a {@link UnitSuffixProvider}, which has access to the unit
+ * and the actual value being rendered, for the sake of maximum flexibility.
+ * {@link UnitSuffixProviders} has factory methods for more typical cases such as one suffix per
+ * unit, or one singular and one plural suffix per unit.
+ * <p>
+ * Negative {@link Duration} values are split so that only the first part of the formatted value is
+ * formatted as a negative number; the smaller parts are formatted as positive numbers. See the
+ * example above: -90 seconds is formatted as -1 minutes, 30 seconds (not -1 minutes, -30 seconds).
+ * <p>
+ * Note: {@link Duration} values are defined in terms of seconds and nanoseconds. Since calendars'
+ * day, month, and year lengths vary over time, this class uses the {@link ChronoUnit#MONTHS} and
+ * {@link ChronoUnit#YEARS} unit values that are approximations of actual calendar months and years.
  */
 public class DurationFormatter {
   private static final BigInteger NANOS_PER_SECOND = BigInteger.valueOf(1_000_000_000L);
@@ -34,6 +57,7 @@ public class DurationFormatter {
 
   /**
    * Create a DurationFormatter.
+   *
    * @param format The formatting rules to use.
    */
   public DurationFormatter(DurationFormat format) {
@@ -49,6 +73,7 @@ public class DurationFormatter {
 
   /**
    * Format a Duration.
+   *
    * @param duration The Duration to format.
    * @return The formatted representation of the Duration.
    */
@@ -130,8 +155,7 @@ public class DurationFormatter {
   }
 
   private String suffixFor(ChronoUnit unit, BigInteger partValue) {
-    if ((partValue.compareTo(INT_MAX_AS_BIG) > 1) ||
-        (partValue.compareTo(INT_MIN_AS_BIG) < 1)) {
+    if ((partValue.compareTo(INT_MAX_AS_BIG) > 1) || (partValue.compareTo(INT_MIN_AS_BIG) < 1)) {
       return format.unitSuffixProvider().suffixFor(unit, new BigDecimal(partValue));
     }
     return format.unitSuffixProvider().suffixFor(unit, partValue.intValue());

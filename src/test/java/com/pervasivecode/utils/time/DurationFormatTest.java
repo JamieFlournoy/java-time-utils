@@ -1,37 +1,44 @@
 package com.pervasivecode.utils.time;
 
 import static com.google.common.truth.Truth.assertThat;
+import static java.time.temporal.ChronoUnit.HOURS;
+import static java.time.temporal.ChronoUnit.MILLIS;
+import static java.time.temporal.ChronoUnit.MINUTES;
+import static java.time.temporal.ChronoUnit.SECONDS;
 import java.text.NumberFormat;
-import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 import org.junit.Test;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.truth.Truth;
 
 public class DurationFormatTest {
   private static DurationFormat.Builder validBuilder() {
-    return DurationFormat.builder().setUnitSuffixes( //
-        ImmutableMap.of(ChronoUnit.HOURS, "h", //
-            ChronoUnit.MINUTES, "m", //
-            ChronoUnit.SECONDS, "s", //
-            ChronoUnit.MILLIS, "ms")) //
+    UnitSuffixProvider suffixProvider = UnitSuffixProviders.fixedSuffixPerUnit( //
+        ImmutableMap.of(HOURS, "h", //
+            MINUTES, "m", //
+            SECONDS, "s", //
+            MILLIS, "ms"));
+    return DurationFormat.builder() //
+        .setUnitSuffixProvider(suffixProvider) //
         .setPartDelimiter(" ") //
-        .setNumberFormat(NumberFormat.getInstance(Locale.US))
-        .setLargestUnit(ChronoUnit.HOURS) //
-        .setSmallestUnit(ChronoUnit.MINUTES) //
-        .setUnitForZeroDuration(ChronoUnit.MINUTES) //
+        .setNumberFormat(NumberFormat.getInstance(Locale.US)) //
+        .setLargestUnit(HOURS) //
+        .setSmallestUnit(MINUTES) //
+        .setUnitForZeroDuration(MINUTES) //
         .setNumFractionalDigits(1);
   }
 
   @Test
   public void build_withNoSuffixes_shouldThrow() {
     try {
+      UnitSuffixProvider suffixProvider = UnitSuffixProviders.fixedSuffixPerUnit(ImmutableMap.of());
       validBuilder() //
-          .setUnitSuffixes(ImmutableMap.of()) //
+          .setUnitSuffixProvider(suffixProvider) //
           .build();
       Truth.assert_().fail("Expected an exception here.");
-    } catch (IllegalArgumentException iae) {
-      assertThat(iae).hasMessageThat().contains("suffix");
+    } catch (IllegalStateException ise) {
+      assertThat(ise).hasMessageThat().contains("suffix");
     }
   }
 
@@ -39,22 +46,34 @@ public class DurationFormatTest {
   public void build_withNoUnits_shouldThrow() {
     try {
       validBuilder() //
-          .setLargestUnit(ChronoUnit.MINUTES) //
-          .setSmallestUnit(ChronoUnit.HOURS) //
+          .setLargestUnit(MINUTES) //
+          .setSmallestUnit(HOURS) //
           .build();
       Truth.assert_().fail("Expected an exception here.");
-    } catch (IllegalArgumentException iae) {
-      assertThat(iae).hasMessageThat().contains("units");
+    } catch (IllegalStateException ise) {
+      assertThat(ise).hasMessageThat().contains("units");
     }
 
     try {
       validBuilder() //
-          .setLargestUnit(ChronoUnit.MILLIS) //
-          .setSmallestUnit(ChronoUnit.SECONDS) //
+          .setLargestUnit(MILLIS) //
+          .setSmallestUnit(SECONDS) //
           .build();
       Truth.assert_().fail("Expected an exception here.");
-    } catch (IllegalArgumentException iae) {
-      assertThat(iae).hasMessageThat().contains("units");
+    } catch (IllegalStateException ise) {
+      assertThat(ise).hasMessageThat().contains("units");
+    }
+
+    try {
+      validBuilder() //
+          .setLargestUnit(HOURS) //
+          .setSmallestUnit(SECONDS) //
+          .setUnitForZeroDuration(SECONDS) //
+          .setSuppressedUnits(ImmutableSet.of(HOURS, MINUTES, SECONDS)) //
+          .build();
+      Truth.assert_().fail("Expected an exception here.");
+    } catch (IllegalStateException ise) {
+      assertThat(ise).hasMessageThat().contains("suppressedUnits");
     }
   }
 
@@ -62,27 +81,29 @@ public class DurationFormatTest {
   public void build_withFewerThanZeroUnits_shouldThrow() {
     try {
       validBuilder() //
-          .setLargestUnit(ChronoUnit.SECONDS) //
-          .setSmallestUnit(ChronoUnit.HOURS) //
+          .setLargestUnit(SECONDS) //
+          .setSmallestUnit(HOURS) //
           .build();
       Truth.assert_().fail("Expected an exception here.");
-    } catch (IllegalArgumentException iae) {
-      assertThat(iae).hasMessageThat().contains("units");
+    } catch (IllegalStateException ise) {
+      assertThat(ise).hasMessageThat().contains("units");
     }
   }
 
   @Test
   public void build_withUnitsMissingSuffixes_shouldThrow() {
     try {
+      UnitSuffixProvider suffixProvider =
+          UnitSuffixProviders.fixedSuffixPerUnit(ImmutableMap.of(MINUTES, "min"));
       validBuilder() //
-          .setUnitSuffixes(ImmutableMap.of(ChronoUnit.MINUTES, "min")) //
-          .setLargestUnit(ChronoUnit.MINUTES) //
-          .setSmallestUnit(ChronoUnit.SECONDS) //
+          .setUnitSuffixProvider(suffixProvider) //
+          .setLargestUnit(MINUTES) //
+          .setSmallestUnit(SECONDS) //
           .build();
       Truth.assert_().fail("Expected an exception here.");
-    } catch (IllegalArgumentException iae) {
-      assertThat(iae).hasMessageThat().contains("suffix");
-      assertThat(iae).hasMessageThat().contains("Seconds");
+    } catch (IllegalStateException ise) {
+      assertThat(ise).hasMessageThat().contains("suffix");
+      assertThat(ise).hasMessageThat().contains("Seconds");
     }
   }
 
@@ -90,16 +111,16 @@ public class DurationFormatTest {
   public void build_withUnitForZeroDurationNotInSmallestToLargestUnitRange_shouldThrow() {
     try {
       validBuilder() //
-          .setLargestUnit(ChronoUnit.MINUTES) //
-          .setSmallestUnit(ChronoUnit.MILLIS) //
-          .setUnitForZeroDuration(ChronoUnit.HOURS) //
+          .setLargestUnit(MINUTES) //
+          .setSmallestUnit(MILLIS) //
+          .setUnitForZeroDuration(HOURS) //
           .build();
       Truth.assert_().fail("Expected an exception here.");
-    } catch (IllegalArgumentException iae) {
-      assertThat(iae).hasMessageThat().contains("Zero");
+    } catch (IllegalStateException ise) {
+      assertThat(ise).hasMessageThat().contains("Zero");
     }
   }
-  
+
   @Test
   public void build_withNegativeFractionalDigits_shouldThrow() {
     try {
@@ -107,8 +128,8 @@ public class DurationFormatTest {
           .setNumFractionalDigits(-1) //
           .build();
       Truth.assert_().fail("Expected an exception here.");
-    } catch (IllegalArgumentException iae) {
-      assertThat(iae).hasMessageThat().contains("digits");
+    } catch (IllegalStateException ise) {
+      assertThat(ise).hasMessageThat().contains("digits");
     }
   }
 
