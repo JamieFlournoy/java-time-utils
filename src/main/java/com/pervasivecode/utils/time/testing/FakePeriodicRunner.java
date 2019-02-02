@@ -13,11 +13,10 @@ public class FakePeriodicRunner implements PeriodicRunner {
 
   @Override
   public void setPeriodicTask(Runnable task) {
-    checkState(this.task == null,
+    checkState(!started, 
         "A task is already scheduled in this runner. Call stop() before setting a different "
             + "scheduled task, or create a new SimplePeriodicRunner instance to handle an "
             + "additional scheduled task.");
-    checkState(!started);
     this.task = checkNotNull(task);
   }
 

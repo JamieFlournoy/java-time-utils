@@ -7,6 +7,8 @@ import java.util.Map;
 
 
 public class UnitSuffixProviders {
+  private UnitSuffixProviders() {}
+
   private static final BigDecimal BIG_NEGATIVE_ONE = BigDecimal.ONE.negate();
 
   public static UnitSuffixProvider fixedSuffixPerUnit(Map<ChronoUnit, String> unitSuffixes) {

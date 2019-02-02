@@ -147,15 +147,12 @@ public class DurationFormatter {
         break;
       }
     }
-    if (parts.isEmpty()) {
-      return formatZero();
-    }
 
     return partJoiner.join(parts);
   }
 
   private String suffixFor(ChronoUnit unit, BigInteger partValue) {
-    if ((partValue.compareTo(INT_MAX_AS_BIG) > 1) || (partValue.compareTo(INT_MIN_AS_BIG) < 1)) {
+    if ((partValue.compareTo(INT_MAX_AS_BIG) > 0) || (partValue.compareTo(INT_MIN_AS_BIG) < 0)) {
       return format.unitSuffixProvider().suffixFor(unit, new BigDecimal(partValue));
     }
     return format.unitSuffixProvider().suffixFor(unit, partValue.intValue());

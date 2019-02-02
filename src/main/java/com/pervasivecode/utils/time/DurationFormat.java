@@ -2,11 +2,10 @@ package com.pervasivecode.utils.time;
 
 import static com.google.common.base.Preconditions.checkState;
 import java.text.NumberFormat;
-import java.time.temporal.ChronoUnit;
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.annotation.concurrent.Immutable;
 import com.google.auto.value.AutoValue;
@@ -187,11 +186,6 @@ public abstract class DurationFormat {
    */
   @AutoValue.Builder
   public static abstract class Builder {
-    @Deprecated
-    public Builder setUnitSuffixes(Map<ChronoUnit, String> unitSuffixes) {
-      return setUnitSuffixProvider(UnitSuffixProviders.fixedSuffixPerUnit(unitSuffixes));
-    }
-
     public abstract Builder setUnitSuffixProvider(UnitSuffixProvider suffixProvider);
 
     public abstract Builder setPartDelimiter(String partDelimiter);

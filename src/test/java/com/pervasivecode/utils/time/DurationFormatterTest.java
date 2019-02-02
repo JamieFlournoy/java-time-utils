@@ -210,6 +210,21 @@ public class DurationFormatterTest {
   }
 
   @Test
+  public void format_withDurationThatRoundsToZero_shouldFormatAsZero() {
+    DurationFormat format = DurationFormat.builder(DurationFormats.getUsDefaultInstance()) //
+        .setLargestUnit(HOURS) //
+        .setSmallestUnit(MINUTES) //
+        .setUnitForZeroDuration(MINUTES) //
+        .setRemainderHandling(DurationRemainderHandling.TRUNCATE) //
+        .build();
+    DurationFormatter formatter = new DurationFormatter(format);
+    checkFormattedDuration(formatter, Duration.ofNanos(1), "0m");
+    checkFormattedDuration(formatter, Duration.ofMillis(1), "0m");
+    checkFormattedDuration(formatter, Duration.ofSeconds(59), "0m");
+    checkFormattedDuration(formatter, Duration.ofMillis(59_999), "0m");
+  }
+
+  @Test
   public void format_withJustWholeMinutes_shouldWork() {
     DurationFormat format = DurationFormat.builder(DurationFormats.getUsDefaultInstance()) //
         .setLargestUnit(MINUTES) //

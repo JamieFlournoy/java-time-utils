@@ -1,6 +1,7 @@
 package com.pervasivecode.utils.time.testing;
 
 import static com.google.common.truth.Truth.assertThat;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,6 +27,23 @@ public class FakePeriodicRunnerTest {
     } catch (IllegalStateException e) {
       assertThat(e.getMessage()).contains("already scheduled");
     }
+  }
+
+  @Test
+  public void setPeriodicTask_withStoppedTask_shouldWork() {
+    AtomicInteger someInt = new AtomicInteger();
+
+    runner.setPeriodicTask(() -> someInt.getAndAdd(1));
+    runner.start();
+    runner.runOnce();
+    runner.stop();
+
+    runner.setPeriodicTask(() -> someInt.getAndAdd(2));
+    runner.start();
+    runner.runOnce();
+    runner.stop();
+
+    assertThat(someInt.get()).isEqualTo(3);
   }
 
   @Test

@@ -17,6 +17,8 @@ import com.google.common.collect.ImmutableMap;
 
 /** Factory methods for DurationFormat instances. */
 public class DurationFormats {
+  private DurationFormats() {}
+
   /**
    * DurationFormat for US locales, using units from nanoseconds up to years, without fractions.
    * <p>
