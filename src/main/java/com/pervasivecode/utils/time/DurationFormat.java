@@ -3,6 +3,7 @@ package com.pervasivecode.utils.time;
 import static com.google.common.base.Preconditions.checkState;
 import java.text.NumberFormat;
 import java.time.temporal.ChronoUnit;
+import java.time.Duration;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -122,9 +123,11 @@ public abstract class DurationFormat {
 
   /**
    * Get a list of units which are greater than or equal to smallestUnit and less than or equal to
-   * largestUnit, without units
+   * largestUnit, without the units specified by {@link #suppressedUnits()}. These units are the
+   * ones that will be treated as available for formatting values. Units not in this list will not
+   * be used by the {@link DurationFormatter}.
    * 
-   * @return
+   * @return The list of available units for formatting.
    */
   @Memoized
   public List<ChronoUnit> units() {
@@ -161,6 +164,7 @@ public abstract class DurationFormat {
    * This new builder is configured with the values taken from the {@code format} parameter. In
    * effect, it is a mutable copy of that instance.
    *
+   * @param format The format to use to configure the new Builder instance.
    * @return a new {@link DurationFormat.Builder} instance, with the same values as the instance
    *         passed via the {@code format} parameter.
    */

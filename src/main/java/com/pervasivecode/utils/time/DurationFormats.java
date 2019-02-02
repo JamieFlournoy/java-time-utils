@@ -26,6 +26,7 @@ public class DurationFormats {
    * <li>3601 seconds: -&gt; "1h 1s"
    * <li>8 days -&gt; "1w 1d"
    * <li>8 days -&gt; "1w 1d"
+   * </ul>
    *
    * @return An instance that will format values in a form appropriate for the US locale.
    */

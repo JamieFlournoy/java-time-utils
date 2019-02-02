@@ -15,7 +15,7 @@ import com.google.common.collect.ImmutableList;
 
 /**
  * Formatter for a {@link Duration} value. {@link Duration}s are split into avaialble
- * {@link ChronoUnits} as specified in the {@link DurationFormat}, using unit {@link Duration}s
+ * {@link ChronoUnit}s as specified in the {@link DurationFormat}, using unit {@link Duration}s
  * obtained from {@link ChronoUnit} values.
  * <p>
  * The format is specified by a {@link DurationFormat}, allowing formats such as:
