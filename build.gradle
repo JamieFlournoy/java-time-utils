@@ -130,11 +130,11 @@ publishing {
                 // response. Likewise, publishing assets to a release
                 // staging repository will only work if this version
                 // does _not_ end in "-SNAPSHOT".
-                version = '0.9'
+                version = '0.10-SNAPSHOT'
 
                 pom {
                     name = 'Java Time Utilities'
-                    description = 'Classes to simplify writing easily-testable code that uses real-world time (delays, stopwatches, etc.)'
+                    description = 'Classes to to format Durations, and simplify writing easily-testable code that uses real-world time (delays, stopwatches, etc.)'
                     url = 'https://github.com/JamieFlournoy/java-time-utils'
 
                     licenses {
