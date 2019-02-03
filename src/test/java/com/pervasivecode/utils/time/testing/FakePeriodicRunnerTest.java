@@ -6,6 +6,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Before;
 import org.junit.Test;
 import com.google.common.truth.Truth;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 
 public class FakePeriodicRunnerTest {
   private static final Runnable DUMMY_RUNNABLE = () -> {
@@ -121,5 +123,10 @@ public class FakePeriodicRunnerTest {
     } catch (IllegalStateException e) {
       assertThat(e).hasMessageThat().isEqualTo("The periodic task is not running.");
     }
+  }
+
+  @Test
+  public void equalsAndHashCode_shouldWork() {
+    EqualsVerifier.forClass(FakePeriodicRunner.class).suppress(Warning.NONFINAL_FIELDS).verify();
   }
 }

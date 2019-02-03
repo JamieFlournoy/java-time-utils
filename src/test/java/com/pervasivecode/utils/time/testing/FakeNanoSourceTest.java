@@ -1,7 +1,9 @@
 package com.pervasivecode.utils.time.testing;
 
 import static com.google.common.truth.Truth.assertThat;
+import static nl.jqno.equalsverifier.Warning.NONFINAL_FIELDS;
 import org.junit.Test;
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 
 public class FakeNanoSourceTest {
@@ -24,5 +26,10 @@ public class FakeNanoSourceTest {
     nanoSource.incrementTimeNanos(amountToIncrement);
     long secondNanos = nanoSource.currentTimeNanoPrecision();
     assertThat(secondNanos).isAtLeast(firstNanos + amountToIncrement);
+  }
+
+  @Test
+  public void equalsAndHashCode_shouldWork() {
+    EqualsVerifier.forClass(FakeNanoSource.class).suppress(NONFINAL_FIELDS).verify();
   }
 }

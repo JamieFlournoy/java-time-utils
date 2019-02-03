@@ -3,12 +3,13 @@ package com.pervasivecode.utils.time;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /** A simple implementation of a {@link PeriodicRunner} using a {@link ScheduledExecutorService}. */
-public class SimplePeriodicRunner implements PeriodicRunner {
+public final class SimplePeriodicRunner implements PeriodicRunner {
   private final Duration progressUpdateInterval;
   private final ScheduledExecutorService executor;
   private ScheduledFuture<?> scheduled = null;
@@ -54,5 +55,25 @@ public class SimplePeriodicRunner implements PeriodicRunner {
         "The periodic task has not been started yet, or has been stopped.");
     scheduled.cancel(false);
     scheduled = null;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(progressUpdateInterval, executor, scheduled, task);
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (other == this) {
+      return true;
+    }
+    if (!(other instanceof SimplePeriodicRunner)) {
+      return false;
+    }
+    SimplePeriodicRunner otherRunner = (SimplePeriodicRunner) other;
+    return Objects.equals(otherRunner.progressUpdateInterval, progressUpdateInterval)
+        && Objects.equals(otherRunner.executor, executor)
+        && Objects.equals(otherRunner.scheduled, scheduled)
+        && Objects.equals(otherRunner.task, task);
   }
 }

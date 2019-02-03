@@ -11,6 +11,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import com.pervasivecode.utils.time.SimplePeriodicRunnerFactory;
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 public class SimplePeriodicRunnerFactoryTest {
   private ScheduledExecutorService executor;
@@ -69,5 +70,10 @@ public class SimplePeriodicRunnerFactoryTest {
     SimplePeriodicRunnerFactory factory = new SimplePeriodicRunnerFactory(executor);
     factory.shutdownNow();
     verify(executor).shutdownNow();
+  }
+
+  @Test
+  public void equalsAndHashCode_shouldWork() {
+    EqualsVerifier.forClass(SimplePeriodicRunnerFactory.class).verify();
   }
 }

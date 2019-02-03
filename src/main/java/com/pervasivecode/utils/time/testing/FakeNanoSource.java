@@ -1,11 +1,12 @@
 package com.pervasivecode.utils.time.testing;
 
+import java.util.Objects;
 import com.pervasivecode.utils.time.CurrentNanosSource;
 
 /**
  * This is a fake implementation of {@link CurrentNanosSource}, intended for use by test code.
  */
-public class FakeNanoSource implements CurrentNanosSource {
+public final class FakeNanoSource implements CurrentNanosSource {
   private long fakeNanos = 12345L;
 
   /**
@@ -27,5 +28,22 @@ public class FakeNanoSource implements CurrentNanosSource {
     long current = fakeNanos;
     incrementTimeNanos(1L);
     return current;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(fakeNanos);
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (other == this) {
+      return true;
+    }
+    if (!(other instanceof FakeNanoSource)) {
+      return false;
+    }
+    FakeNanoSource otherSource = (FakeNanoSource) other;
+    return otherSource.fakeNanos == fakeNanos;
   }
 }

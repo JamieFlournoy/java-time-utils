@@ -47,13 +47,13 @@ import com.google.common.collect.ImmutableList;
  * day, month, and year lengths vary over time, this class uses the {@link ChronoUnit#MONTHS} and
  * {@link ChronoUnit#YEARS} unit values that are approximations of actual calendar months and years.
  */
-public class DurationFormatter {
+public final class DurationFormatter {
   private static final BigInteger NANOS_PER_SECOND = BigInteger.valueOf(1_000_000_000L);
   private static final BigInteger INT_MAX_AS_BIG = BigInteger.valueOf(Integer.MAX_VALUE);
   private static final BigInteger INT_MIN_AS_BIG = BigInteger.valueOf(Integer.MIN_VALUE);
 
   private final DurationFormat format;
-  private final Joiner partJoiner;
+  private final transient Joiner partJoiner;
 
   /**
    * Create a DurationFormatter.
@@ -165,5 +165,22 @@ public class DurationFormatter {
     nf.setMinimumFractionDigits(0);
     nf.setMaximumFractionDigits(0);
     return nf.format(0) + zeroSuffix;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(format);
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (other == this) {
+      return true;
+    }
+    if (!(other instanceof DurationFormatter)) {
+      return false;
+    }
+    DurationFormatter otherFormatter = (DurationFormatter) other;
+    return Objects.equals(otherFormatter.format, format);
   }
 }

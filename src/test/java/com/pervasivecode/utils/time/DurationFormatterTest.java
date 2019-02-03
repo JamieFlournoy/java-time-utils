@@ -16,6 +16,7 @@ import org.junit.Test;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.truth.Truth;
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 public class DurationFormatterTest {
   private static void checkFormattedDuration(DurationFormatter formatter, Duration duration,
@@ -277,5 +278,10 @@ public class DurationFormatterTest {
     checkFormattedDuration(formatter, Duration.ofDays(-12000), "-1,036,800,000,000,000,000ns");
     checkFormattedDuration(formatter, Duration.ofDays(-120000), "-10,368,000,000,000,000,000ns");
     checkFormattedDuration(formatter, Duration.ofDays(-1200000), "-103,680,000,000,000,000,000ns");
+  }
+
+  @Test
+  public void equalsAndHashCode_shouldWork() {
+    EqualsVerifier.forClass(DurationFormatter.class).verify();
   }
 }

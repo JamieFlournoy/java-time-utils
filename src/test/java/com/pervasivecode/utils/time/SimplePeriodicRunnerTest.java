@@ -17,7 +17,8 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.mockito.stubbing.Answer;
 import com.google.common.truth.Truth;
-import com.pervasivecode.utils.time.SimplePeriodicRunner;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 
 public class SimplePeriodicRunnerTest {
   private static final Runnable DUMMY_RUNNABLE = () -> {
@@ -117,5 +118,10 @@ public class SimplePeriodicRunnerTest {
     runner.setPeriodicTask(DUMMY_RUNNABLE);
     runner.start();
     runner.stop();
+  }
+
+  @Test
+  public void equalsAndHashCode_shouldWork() {
+    EqualsVerifier.forClass(SimplePeriodicRunner.class).suppress(Warning.NONFINAL_FIELDS).verify();
   }
 }

@@ -5,6 +5,8 @@ import java.time.Duration;
 import java.time.Instant;
 import org.junit.Before;
 import org.junit.Test;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 
 public class FakeTimeSourceTest {
   private FakeTimeSource ts;
@@ -46,5 +48,10 @@ public class FakeTimeSourceTest {
 
     ts.advance(Duration.ofSeconds(7));
     assertThat(ts.elapsedSoFar()).isEqualTo(Duration.ofMillis(7_137L));
+  }
+
+  @Test
+  public void equalsAndHashCode_shouldWork() {
+    EqualsVerifier.forClass(FakeTimeSource.class).suppress(Warning.NONFINAL_FIELDS).verify();
   }
 }

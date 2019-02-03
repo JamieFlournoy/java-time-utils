@@ -1,6 +1,7 @@
 package com.pervasivecode.utils.time;
 
 import java.time.Duration;
+import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -22,9 +23,7 @@ import com.google.common.annotations.VisibleForTesting;
  * single task can block all other eligible tasks from running on time.
  * </ul>
  */
-
-public class SimplePeriodicRunnerFactory {
-
+public final class SimplePeriodicRunnerFactory {
   @VisibleForTesting
   static ScheduledThreadPoolExecutor createExecutorService() {
     ScheduledThreadPoolExecutor stpe =
@@ -95,5 +94,22 @@ public class SimplePeriodicRunnerFactory {
    */
   public void shutdownNow() {
     executor.shutdownNow();
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(executor);
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (other == this) {
+      return true;
+    }
+    if (!(other instanceof SimplePeriodicRunnerFactory)) {
+      return false;
+    }
+    SimplePeriodicRunnerFactory otherFactory = (SimplePeriodicRunnerFactory) other;
+    return Objects.equals(otherFactory.executor, executor);
   }
 }

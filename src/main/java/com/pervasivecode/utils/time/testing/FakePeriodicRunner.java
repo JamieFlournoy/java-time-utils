@@ -2,18 +2,19 @@ package com.pervasivecode.utils.time.testing;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import java.util.Objects;
 import com.pervasivecode.utils.time.PeriodicRunner;
 
 /**
  * This is a fake implementation of {@link PeriodicRunner}, intended for use by test code.
  */
-public class FakePeriodicRunner implements PeriodicRunner {
+public final class FakePeriodicRunner implements PeriodicRunner {
   private Runnable task = null;
   public boolean started = false;
 
   @Override
   public void setPeriodicTask(Runnable task) {
-    checkState(!started, 
+    checkState(!started,
         "A task is already scheduled in this runner. Call stop() before setting a different "
             + "scheduled task, or create a new SimplePeriodicRunner instance to handle an "
             + "additional scheduled task.");
@@ -23,6 +24,7 @@ public class FakePeriodicRunner implements PeriodicRunner {
 
   /**
    * Set an internal flag saying that this runner is in the started state.
+   *
    * @throws IllegalStateException if no task has been provided.
    */
   @Override
@@ -34,7 +36,8 @@ public class FakePeriodicRunner implements PeriodicRunner {
 
   /**
    * Set an internal flag saying that this runner is <i>not</i> in the started state.
-   * @throws IllegalStateException if the task is already not in the started state. 
+   *
+   * @throws IllegalStateException if the task is already not in the started state.
    */
   @Override
   public void stop() {
@@ -49,10 +52,28 @@ public class FakePeriodicRunner implements PeriodicRunner {
    * This will also verify that this runner is in the started state: that is, that the
    * {@link #start()} method has been called more recently than the last call to {@link #stop()}, if
    * any.
+   *
    * @throws IllegalStateException if this runner is not in the started state.
    */
   public void runOnce() {
     checkState(started, "The periodic task has not been started yet, or has been stopped.");
     this.task.run();
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(task, started);
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (other == this) {
+      return true;
+    }
+    if (!(other instanceof FakePeriodicRunner)) {
+      return false;
+    }
+    FakePeriodicRunner otherRunner = (FakePeriodicRunner) other;
+    return otherRunner.started == started && Objects.equals(otherRunner.task, task);
   }
 }
