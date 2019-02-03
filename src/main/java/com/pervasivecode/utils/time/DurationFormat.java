@@ -19,6 +19,8 @@ import com.google.common.collect.Lists;
 @AutoValue
 @Immutable
 public abstract class DurationFormat {
+  protected DurationFormat() {};
+
   private static final Comparator<ChronoUnit> DURATION_COMPARATOR =
       (unit, otherUnit) -> unit.compareTo(otherUnit);
 
@@ -186,6 +188,8 @@ public abstract class DurationFormat {
    */
   @AutoValue.Builder
   public static abstract class Builder {
+    protected Builder() {};
+
     public abstract Builder setUnitSuffixProvider(UnitSuffixProvider suffixProvider);
 
     public abstract Builder setPartDelimiter(String partDelimiter);
