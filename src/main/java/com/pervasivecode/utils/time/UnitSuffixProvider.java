@@ -1,8 +1,17 @@
 package com.pervasivecode.utils.time;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
+/**
+ * A provider of unit suffixes for formatting {@link Duration} values of varying units.
+ * <p>
+ * Example: Formatting a {@link Duration} of 243 minutes in units of hours and minutes requires a
+ * unit suffix for 4 (hours) and a unit suffix for 3 (minutes). If the desired formatted duration
+ * string is "4hrs 3mins" then the UnitSuffixProvider will provide the "hrs" and "mins" unit
+ * suffixes.
+ */
 public interface UnitSuffixProvider {
   /**
    * Get the appropriate suffix to use for the specified unit and magnitude.
