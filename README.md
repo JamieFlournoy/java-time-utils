@@ -23,17 +23,17 @@ Use groupId `com.pervasivecode`, name `time-utils`, version `0.9` in your build 
 
 ### Gradle Example
 
-If you are using Gradle 4.x, put this in your build.properties file:
+If you are using Gradle 4.x or 5.x, put this in your build.properties file:
 
 ```
 // in your build.gradle's repositories {} block:
     mavenCentral();
 
 // in your build.gradle's dependencies {} block:
-    implementation 'com.pervasivecode:time-utils:0.9'
+    implementation 'com.pervasivecode:time-utils:0.10'
 
     // or, if you prefer the separated group/name/version syntax:
-    implementation group: 'com.pervasivecode', name: 'time-utils', version: '0.9'
+    implementation group: 'com.pervasivecode', name: 'time-utils', version: '0.10'
 ```
 
 

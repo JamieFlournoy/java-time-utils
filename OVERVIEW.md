@@ -7,31 +7,69 @@ If you prefer Javadocs, they are available on `javadoc.io`:
 
 ## Interfaces
 
-[CurrentNanosSource](src/main/java/com/pervasivecode/utils/time/api/CurrentNanosSource.java) provides the current time in units of nanoseconds since the Unix epoch.
+### [CurrentNanosSource](src/main/java/com/pervasivecode/utils/time/CurrentNanosSource.java)
 
-[TimeSource](src/main/java/com/pervasivecode/utils/time/api/TimeSource.java) provides the current time in terms of a `java.time.Instant`.
+An object that provides the current time since the Unix epoch, with nanosecond precision.
 
-[PeriodicRunner](src/main/java/com/pervasivecode/utils/time/api/PeriodicRunner.java) invokes a specified `Runnable` task periodically, after the caller calls `start()` and until the caller calls `stop()`.
+### [PeriodicRunner](src/main/java/com/pervasivecode/utils/time/PeriodicRunner.java)
 
+An object that can run a single Runnable task repeatedly at a steady rate.
+
+### [TimeSource](src/main/java/com/pervasivecode/utils/time/TimeSource.java)
+
+An object that supplies values meant to represent the current wall-clock time.
+
+### [UnitSuffixProvider](src/main/java/com/pervasivecode/utils/time/UnitSuffixProvider.java)
+
+A provider of unit suffixes for formatting [Duration](https://docs.oracle.com/javase/10/docs/api/java/time/Duration.html?is-external=true) values of varying units.
+
+## Enums
+
+### [DurationRemainderHandling](src/main/java/com/pervasivecode/utils/time/DurationRemainderHandling.java)
+
+Strategies for formatting Durations that have a remainder smaller than the smallest unit of time that will be shown.
 
 ## Real Implementations
 
-### [SimplePeriodicRunnerFactory](src/main/java/com/pervasivecode/utils/time/impl/SimplePeriodicRunner.java)
-This is a very simple wrapper around a [java.util.concurrent.ScheduledThreadPoolExecutor](https://docs.oracle.com/javase/10/docs/api/java/util/concurrent/ScheduledThreadPoolExecutor.html) instance. 
+### [DurationFormat](src/main/java/com/pervasivecode/utils/time/DurationFormat.java)
 
-[SimplePeriodicRunnerFactory](src/main/java/com/pervasivecode/utils/time/impl/SimplePeriodicRunnerFactory.java) produces instances of [SimplePeriodicRunner](src/main/java/com/pervasivecode/utils/time/impl/SimplePeriodicRunner.java), each of which manages a single Runnable, all of which are invoked periodically by a shared [ScheduledThreadPoolExecutor](https://docs.oracle.com/javase/10/docs/api/java/util/concurrent/ScheduledThreadPoolExecutor.html) instance belonging to the factory. See the Javadoc documentation of [SimplePeriodicRunnerFactory](src/main/java/com/pervasivecode/utils/time/impl/SimplePeriodicRunnerFactory.java) for caveats of this minimalist design.
+This object holds configuration information for a DurationFormatter instance.
 
-### TimeSource
+### [DurationFormat.Builder](src/main/java/com/pervasivecode/utils/time/DurationFormat.java)
 
-This can trivially be implemented as a lambda in your calling code, so no library implementation is provided:
+This object will build a DurationFormat instance.
+
+### [DurationFormats](src/main/java/com/pervasivecode/utils/time/DurationFormats.java)
+
+Factory methods for DurationFormat instances.
+
+### [DurationFormatter](src/main/java/com/pervasivecode/utils/time/DurationFormatter.java)
+
+Formatter for a Duration value.
+
+### [SimplePeriodicRunner](src/main/java/com/pervasivecode/utils/time/SimplePeriodicRunner.java)
+
+A simple implementation of a PeriodicRunner using a ScheduledExecutorService.
+
+### [SimplePeriodicRunnerFactory](src/main/java/com/pervasivecode/utils/time/SimplePeriodicRunner.java)
+
+Instances of this class will run a single Runnable task repeatedly at a rate specified in terms of an interval.
+
+### [UnitSuffixProviders](src/main/java/com/pervasivecode/utils/time/UnitSuffixProviders.java)
+
+Factory methods for UnitSuffixProvider instances that behave in ways that are appropriate for most locales.
+
+### Intentionally omitted:
+
+These interfaces can trivially be implemented as a lambda in your calling code, so no library implementation is provided:
+
+#### TimeSource
 
 ```
 TimeSource t = ()->Instant.now();
 ```
 
-### CurrentNanosSource:
-
-This can trivially be implemented as a lambda in your calling code, so no library implementation is provided:
+#### CurrentNanosSource:
 
 ```
 CurrentNanosSource c = ()->System.nanoTime();
