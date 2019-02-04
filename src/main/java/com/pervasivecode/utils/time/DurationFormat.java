@@ -34,7 +34,7 @@ public abstract class DurationFormat {
   /**
    * The provider of unit suffixes that the {@link DurationFormatter} will use when formatting each
    * part of the {@link Duration}.
-   * 
+   *
    * @return the {@link UnitSuffixProvider}.
    */
   public abstract UnitSuffixProvider unitSuffixProvider();
@@ -89,7 +89,7 @@ public abstract class DurationFormat {
   /**
    * Get the set of units that should not be included in the list of allowed units, even if they
    * fall within the range described by the smallestUnit and largestUnit properties.
-   * 
+   *
    * @return The set of units which should not be used when formatting duration values.
    */
   public abstract Set<ChronoUnit> suppressedUnits();
@@ -101,7 +101,7 @@ public abstract class DurationFormat {
    * <p>
    * Example: 36 hours formatted in units of days with a numFractionalDigits value of 2 will be
    * represented as 1.5 days.
-   * 
+   *
    * @return The maximum number of fractional digits to use when formatting the value of the
    *         smallest allowed unit.
    */
@@ -117,7 +117,7 @@ public abstract class DurationFormat {
    * as 0.01 or 0.02? {@link DurationRemainderHandling#TRUNCATE} will drop the 0.009 milliseconds;
    * {@link DurationRemainderHandling#ROUND_HALF_EVEN} will round the 0.009 milliseconds up to 0.01,
    * for a formatted value of 0.02 milliseconds.
-   * 
+   *
    * @return The DurationRemainderHandling value that will control how rounding is performed.
    */
   public abstract DurationRemainderHandling remainderHandling();
@@ -127,7 +127,7 @@ public abstract class DurationFormat {
    * largestUnit, without the units specified by {@link #suppressedUnits()}. These units are the
    * ones that will be treated as available for formatting values. Units not in this list will not
    * be used by the {@link DurationFormatter}.
-   * 
+   *
    * @return The list of available units for formatting.
    */
   @Memoized
@@ -214,7 +214,7 @@ public abstract class DurationFormat {
      * Create an instance of {@link DurationFormat} from this builder instance.
      * <p>
      * Field values are validated before the {@link DurationFormat} is returned.
-     * 
+     *
      * @throws IllegalArgumentException if the smallestUnit is larger than the largestUnit.
      * @throws IllegalArgumentException if the UnitSuffixProvider cannot provide suffixes for all of
      *         the units specified by smallestUnit, largestUnit, and useHalfDays.

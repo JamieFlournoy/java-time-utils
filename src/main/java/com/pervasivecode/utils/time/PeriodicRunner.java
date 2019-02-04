@@ -11,7 +11,7 @@ public interface PeriodicRunner {
   /**
    * Specify the task that this PeriodicRunner should run periodically. The specified task will not
    * be run until after the {@link #start()} method has been called.
-   * 
+   *
    * @param task The task to run periodically.
    * @throws IllegalStateException if a task has already been provided and has been started, but not
    *         stopped yet. To avoid this, stop the other task before calling this method.
@@ -20,7 +20,7 @@ public interface PeriodicRunner {
 
   /**
    * Start calling the specified Runnable task periodically.
-   * 
+   *
    * @throws IllegalStateException if no task has been provided, or if the task has already been
    *         started.
    */
@@ -28,7 +28,7 @@ public interface PeriodicRunner {
 
   /**
    * Stop calling the specified Runnable task periodically.
-   * 
+   *
    * @throws IllegalStateException if no task has been provided, or has been provided but has not
    *         been started.
    */
