@@ -22,7 +22,8 @@ repositories {
     jcenter()
 }
 
-def errorprone_core_lib = "com.google.errorprone:error_prone_core:2.3.1"
+targetCompatibility = '1.8'
+sourceCompatibility = '1.8'
 
 dependencies {
     // Dependencies needed at runtime and compile-time:
