@@ -128,7 +128,10 @@ public final class DurationFormatter {
         nf.setMaximumFractionDigits(format.numFractionalDigits());
         String fractionPart = nf.format(partValueWithFraction);
         if (fractionPart.equals("0")) {
-          return formatZero();
+          if (parts.isEmpty()) {
+            return formatZero();
+          }
+          break; // omit the trailing zero.
         }
         sb.append(fractionPart);
         suffix = format.unitSuffixProvider().suffixFor(currentUnit, roundedPartValue);

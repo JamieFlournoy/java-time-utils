@@ -3,6 +3,7 @@ package com.pervasivecode.utils.time;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.HALF_DAYS;
 import static java.time.temporal.ChronoUnit.HOURS;
+import static java.time.temporal.ChronoUnit.MICROS;
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.time.temporal.ChronoUnit.NANOS;
@@ -56,7 +57,27 @@ public class DurationFormatterTest {
   @Test
   public void format_withWeeksToMillis_shouldWork() {
     DurationFormatter formatter = new DurationFormatter(DurationFormats.getUsDefaultInstance());
+    checkWeeksToMillis(formatter);
+  }
 
+  @Test
+  public void format_withYearsToMillisWithFraction_shouldWork() {
+    DurationFormatter formatter =
+        new DurationFormatter(DurationFormat.builder(DurationFormats.getUsDefaultInstance())
+            .setSmallestUnit(ChronoUnit.MILLIS).setNumFractionalDigits(3).build());
+
+    checkFormattedDuration(formatter, Duration.ofNanos(2_521_370_223L), "2s 521.37ms");
+    checkFormattedDuration(formatter, Duration.ofNanos(3_000_000_001L), "3s");
+
+    checkFormattedDuration(formatter, Duration.ofSeconds(1), "1s");
+    checkFormattedDuration(formatter, Duration.ofSeconds(1).plus(1, MILLIS), "1s 1ms");
+    checkFormattedDuration(formatter, Duration.ofSeconds(1).plus(1, MICROS), "1s 0.001ms");
+    checkFormattedDuration(formatter, Duration.ofSeconds(1).plus(1, NANOS), "1s");
+
+    checkWeeksToMillis(formatter);
+  }
+
+  private void checkWeeksToMillis(DurationFormatter formatter) {
     checkFormattedDuration(formatter, Duration.ofMillis(17), "17ms");
     checkFormattedDuration(formatter, Duration.ofMillis(137), "137ms");
     checkFormattedDuration(formatter, Duration.ofMillis(1370), "1s 370ms");
