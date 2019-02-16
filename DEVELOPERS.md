@@ -28,22 +28,6 @@ On macOS, you can use this command line to do both in one shot:
 ./gradlew test jacocoTestReport && open build/reports/jacoco/test/html/index.html
 ```
  
-### Integration tests
-
-Integration tests are written using [Cucumber](https://cucumber.io/), and are part of the Gradle build thanks to the [Commercehub Gradle Cucumber JVM Plugin](https://github.com/commercehub-oss/gradle-cucumber-jvm-plugin).
-
-Cucumber tests are executed with the `cucumberTest` target:
-
-```
-./gradlew cucumberTest
-```
-
-Failure results are printed to the console, and an HTML report is generated at:
-
-```
-build/reports/cucumberTest/cucumber-html-reports/overview-features.html
-```
-
 ### Docs
 
 Use `./gradlew javadoc` to generate Javadoc documentation in [build/docs/javadoc](build/docs/javadoc/), then open [build/docs/javadoc/index.html](build/docs/javadoc/index.html) to browse it.
