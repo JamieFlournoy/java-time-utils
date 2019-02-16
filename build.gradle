@@ -6,7 +6,7 @@ plugins {
 
     // This adds ErrorProne, which warns about source code that looks
     // like it's likely to be a bug, or to lead to future bugs.
-    id "net.ltgt.errorprone" version "0.6.1"
+    id "net.ltgt.errorprone" version "0.7"
 
     id 'maven-publish'
     id 'signing'
