@@ -55,6 +55,18 @@ public class DurationFormatterTest {
   }
 
   @Test
+  public void format_withHoursToNanos_shouldWork() {
+    DurationFormat format = DurationFormat.builder(DurationFormats.getUsDefaultInstance()) //
+        .setLargestUnit(HOURS) //
+        .setSmallestUnit(NANOS) //
+        .setRemainderHandling(DurationRemainderHandling.ROUND_HALF_EVEN) //
+        .build();
+
+    DurationFormatter formatter = new DurationFormatter(format);
+    checkFormattedDuration(formatter, Duration.ofNanos(1_000_000_001), "1s 0ms 0µs 1ns");
+  }
+
+  @Test
   public void format_withWeeksToMillis_shouldWork() {
     DurationFormatter formatter = new DurationFormatter(DurationFormats.getUsDefaultInstance());
     checkWeeksToMillis(formatter);
