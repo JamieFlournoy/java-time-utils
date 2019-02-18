@@ -1,6 +1,6 @@
 # How to use Gradle with this project
 
-This project uses the Gradle build system to automate builds. It currently uses Gradle version 5.2.1. If you have no idea what Gradle is or how to use it, you may want to refer to the [Gradle User Manual for version  5.2.1](https://docs.gradle.org/5.1/userguide/userguide.html).
+This project uses the Gradle build system to automate builds. It currently uses Gradle version 5.2.1. If you have no idea what Gradle is or how to use it, you may want to refer to the [Gradle User Manual for version  5.2.1](https://docs.gradle.org/5.2.1/userguide/userguide.html).
 
 `build.gradle` is the main Gradle config file for this project. Pretty much everything is in there; `settings.gradle` is the only other file.
 
