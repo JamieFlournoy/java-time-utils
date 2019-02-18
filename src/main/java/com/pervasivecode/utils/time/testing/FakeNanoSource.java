@@ -1,13 +1,16 @@
 package com.pervasivecode.utils.time.testing;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 import com.pervasivecode.utils.time.CurrentNanosSource;
 
 /**
  * This is a fake implementation of {@link CurrentNanosSource}, intended for use by test code.
+ * <p>
+ * This implementation is thread safe.
  */
 public final class FakeNanoSource implements CurrentNanosSource {
-  private long fakeNanos = 12345L;
+  private AtomicLong fakeNanos = new AtomicLong(12345L);
 
   /**
    * Increment the internal counter by this many fake nanoseconds. Subsequent calls to
@@ -17,7 +20,7 @@ public final class FakeNanoSource implements CurrentNanosSource {
    * @param additionalNanos The number of fake nanoseconds to advance the internal counter.
    */
   public void incrementTimeNanos(long additionalNanos) {
-    fakeNanos += additionalNanos;
+    fakeNanos.getAndAdd(additionalNanos);
   }
 
   /**
@@ -25,9 +28,7 @@ public final class FakeNanoSource implements CurrentNanosSource {
    */
   @Override
   public long currentTimeNanoPrecision() {
-    long current = fakeNanos;
-    incrementTimeNanos(1L);
-    return current;
+    return fakeNanos.getAndIncrement();
   }
 
   @Override
@@ -44,6 +45,6 @@ public final class FakeNanoSource implements CurrentNanosSource {
       return false;
     }
     FakeNanoSource otherSource = (FakeNanoSource) other;
-    return otherSource.fakeNanos == fakeNanos;
+    return Objects.equals(otherSource.fakeNanos, fakeNanos);
   }
 }
