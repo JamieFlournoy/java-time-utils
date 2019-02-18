@@ -67,6 +67,20 @@ jacocoTestReport {
     }
 }
 
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = 'CLASS'
+            limit {
+                minimum = 0.95
+            }
+            excludes = [
+                "*.AutoValue_*"
+            ]
+        }
+    }
+}
+check.dependsOn jacocoTestCoverageVerification
 
 // tell the ErrorProne compiler not to warn about issues in generated
 // code (e.g. AutoValue generated classes)
