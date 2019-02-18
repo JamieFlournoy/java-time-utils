@@ -215,12 +215,12 @@ public abstract class DurationFormat {
      * <p>
      * Field values are validated before the {@link DurationFormat} is returned.
      *
-     * @throws IllegalArgumentException if the smallestUnit is larger than the largestUnit.
-     * @throws IllegalArgumentException if the UnitSuffixProvider cannot provide suffixes for all of
+     * @throws IllegalStateException if the smallestUnit is larger than the largestUnit.
+     * @throws IllegalStateException if the UnitSuffixProvider cannot provide suffixes for all of
      *         the units specified by smallestUnit, largestUnit, and useHalfDays.
-     * @throws IllegalArgumentException if the unitForZeroDuration is not one of the units specified
-     *         by smallestUnit, largestUnit, and useHalfDays.
-     * @throws IllegalArgumentException if numFractionalDigits is negative.
+     * @throws IllegalStateException if the unitForZeroDuration is not one of the units specified by
+     *         smallestUnit, largestUnit, and useHalfDays.
+     * @throws IllegalStateException if numFractionalDigits is negative.
      * @return A valid {@link DurationFormat} instance.
      */
     public DurationFormat build() {
